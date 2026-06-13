@@ -1,0 +1,367 @@
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: "Kantumruy Pro", sans-serif;
+}
+.about {
+    padding-bottom: 80px;
+    padding-top: 100px;
+}
+.title {
+    font-size: 52px;
+    font-weight: bold;
+    counter-reset: black;
+}
+
+.title span {
+    color: rgb(31, 111, 229);
+}
+
+.title,
+.My-team {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 15px;
+} 
+.My-team {
+    margin-bottom: 30px;
+}
+.picture {
+    display: inline-block;
+    width: 350px;
+    border-width: 200px;
+    margin-left: 30px;
+}    
+.our-team {
+    margin-bottom: 10px;
+}
+.desrciption {
+    display: inline-block;
+    width: 700px;
+    vertical-align: top;
+    margin-left: 15px;
+}    
+.black-line {
+    width: 550px;
+    height: 4px;
+    margin-left: 40px;
+    background-color: black;
+    margin-top: 15px;
+    border-radius: 2px;
+    box-shadow: 0px 5px 5px red;
+    margin-bottom: 40px;
+
+}
+
+.text ul {
+    list-style: none;
+}
+ .workteam-picture {
+    border: 4px solid rgb(31, 111, 229);
+    border-radius: 15px;
+    width: 350px;
+    box-shadow: 5px 10px 15px rgba(0, 0, 0, 0.5);
+}
+
+.text {
+    margin-left: 15px;
+    margin-top: 30px;
+}
+
+.introduce-our-team {
+    background-color: rgb(209, 208, 208);
+     padding-bottom: 90px;
+     padding-top: 25px;
+}
+
+.team-member {
+    display: flex;
+    justify-content: center;
+    font-size: 40px;
+    font-weight: bold;
+    counter-reset: black;
+    margin-bottom: 50px;
+}
+.card-container {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    flex-wrap: wrap;
+}
+
+.card {
+    background: white;
+    width: 230px;
+    padding: 12px;
+    border-radius: 10px;
+    display: flex;
+    flex-direction: column;
+}
+
+.card img {
+    
+    width: 200px;
+    border-radius: 10px;
+    display: block;
+    margin: auto;
+}
+
+.card h3 {
+    margin-top: 15px;
+    text-align: center;
+    color: black;
+    font-size: 30px;
+}
+
+.card p {
+    text-align: center;
+    
+    font-size: 14px;
+    color: gray;
+}
+
+.icon a > img {
+    display: inline-block;
+    width: 25px;
+    height: 25px;
+}
+.icon a {
+    text-decoration: none;
+}
+.icon {
+    margin-left: 40px;
+    margin-bottom: 5px; 
+    margin-top: 5px; 
+}
+
+.Buttom {
+    background-color: rgb(179, 37, 255);
+    border: none;
+    text-align: center;
+    height: 30px;
+    width: 200px;
+    border-radius: 15px;
+    cursor: pointer;
+    margin-top: auto;
+}
+
+.Buttom:active {
+    background-color: #7c3aed;
+}
+
+.container-grid {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    flex-wrap: wrap;
+}
+
+/* Responsive Design */
+
+/* ========== Large Tablet / Small Laptop ========== */
+@media (max-width: 992px) {
+    .desrciption {
+        width: 600px;
+    }
+
+    .black-line {
+        width: 400px;
+    }
+
+    .title,
+    .team-member {
+        font-size: 34px;
+    }
+
+    .card h3 {
+        font-size: 24px;
+    }
+
+    .card-container {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 20px;
+        justify-self: center;
+    }
+}
+
+/* ========== Tablet ========== */
+@media (max-width: 768px) {
+    
+    .about {
+        padding-left: 20px;
+        padding-right: 20px;
+    }
+
+    .picture,
+    .desrciption {
+        display: block;
+        width: 100%;
+        margin-left: 0;
+    }
+
+    .picture {
+        text-align: center;
+        margin-bottom: 25px;
+    }
+
+    .workteam-picture {
+        width: 100%;
+        max-width: 350px;
+    }
+
+    .desrciption {
+        text-align: center;
+    }
+
+    .black-line {
+        width: 80%;
+        max-width: 400px;
+        margin-left: auto;
+        margin-right: auto;
+    }
+
+    .text {
+        margin-left: 0;
+        padding: 0 10px;
+    }
+
+    .title,
+    .team-member {
+        font-size: 30px;
+    }
+
+    .card {
+        width: 45%;
+    }
+
+    .card img {
+        width: 100%;
+        max-width: 200px;
+    }
+
+    .icon {
+        margin-left: 0;
+        display: flex;
+        justify-content: center;
+        gap: 10px;
+    }
+
+    .Buttom {
+        width: 100%;
+        max-width: 200px;
+        margin-left: auto;
+        margin-right: auto;
+    }
+}
+
+/* ========== Mobile ========== */
+@media (max-width: 576px) {
+    .about {
+        margin-top: 20px;
+        padding-top: 80px;
+        padding-bottom: 60px;
+        padding-left: 15px;
+        padding-right: 15px;
+    }
+
+    .introduce-our-team {
+        padding-bottom: 60px;
+        padding-left: 15px;
+        padding-right: 15px;
+    }
+
+    .title,
+    .team-member {
+        font-size: 26px;
+        text-align: center;
+    }
+
+    .My-team,
+    .our-team,
+    .text,
+    .card h3,
+    .card p {
+        text-align: center;
+    }
+
+    .picture,
+    .desrciption {
+        width: 100%;
+        margin-left: 0;
+    }
+
+    .workteam-picture {
+        width: 100%;
+        max-width: 300px;
+    }
+
+    .black-line {
+        width: 70%;
+        max-width: 250px;
+        margin-left: auto;
+        margin-right: auto;
+    }
+
+    .text {
+        margin-top: 20px;
+        padding: 0 5px;
+    }
+
+    .card {
+        width: 100%;
+        max-width: 280px;
+    }
+
+    .card img {
+        width: 100%;
+        max-width: 180px;
+    }
+
+    .card h3 {
+        font-size: 22px;
+    }
+
+    .icon {
+        margin-left: 0;
+        display: flex;
+        justify-content: center;
+        gap: 10px;
+        flex-wrap: wrap;
+    }
+
+    .Buttom {
+        width: 100%;
+        max-width: 180px;
+    }
+
+    .desrciption ul li {
+        display: flex;
+        align-items: center;
+        font-size: 14px;
+        margin-bottom: 10px;
+
+    }
+}
+
+/* ========== Very Small Devices ========== */
+@media (max-width: 360px) {
+    .title,
+    .team-member {
+        font-size: 22px;
+    }
+
+    .card {
+        max-width: 100%;
+    }
+
+    .card img {
+        max-width: 150px;
+    }
+
+    .Buttom {
+        max-width: 160px;
+    }
+}

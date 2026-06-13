@@ -1,0 +1,203 @@
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  font-family: "Kantumruy Pro", sans-serif;
+}
+
+body {
+  background-color: #ffffff;
+  color: #333;
+  overflow-x: hidden;
+}
+
+/* Container for the top section */
+.contact-container {
+  max-width: 800px;
+  margin: 50px auto;
+  padding: 0 20px;
+}
+
+.top-section {
+  display: block;
+  padding: 50px 18px 40px;
+  text-align: center;
+  max-width: 1050px;
+  margin: 0 auto;
+}
+
+.top-section h1 {
+  font-size: 52px;
+  margin-bottom: 15px;
+  letter-spacing: 0.2px;
+}
+
+.highlight-text {
+  color: #d978e8;
+}
+
+.subtitle {
+  white-space: normal;
+  margin-top: 18px;
+  font-size: 18px;
+  font-weight: 500;
+  line-height: 1.8;
+  color: #333;
+}
+
+/* Form Styling */
+.contact-form {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.form-row {
+  display: flex;
+  gap: 20px;
+}
+
+.form-group {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+/* Label and input styling */
+.form-group label {
+  font-weight: 700;
+  font-size: 15px;
+  color: #000;
+}
+/* Input and textarea styling */
+.form-group input,
+.form-group textarea {
+  width: 100%;
+  padding: 14px 15px;
+  background-color: #dedede;
+  border: none;
+  border-radius: 6px;
+  font-size: 14px;
+  outline: none;
+  color: #333;
+  transition: background-color 0.3s ease;
+  resize: none;
+}
+
+.form-group input:focus,
+.form-group textarea:focus {
+  background-color: #d0d0d0;
+}
+
+/* Submit Button */
+.submit-btn {
+  background-color: #1a73e8; /* Blue */
+  color: #ffffff;
+  border: none;
+  padding: 15px;
+  border-radius: 6px;
+  font-size: 18px;
+  font-weight: 700;
+  cursor: pointer;
+  margin-top: 10px;
+  transition: background-color 0.3s;
+}
+
+.submit-btn:hover {
+  background-color: #1557b0;
+}
+/*End Submit Button */
+
+/* Bottom Info Section Styling */
+.info-section-wrapper {
+  position: relative;
+  margin-top: 80px;
+  padding-bottom: 50px;
+}
+
+/* Full width blue background placed behind the card */
+.blue-background {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 90%;
+  background-color: #1a73e8;
+  z-index: 1;
+}
+
+.info-card-container {
+  max-width: 900px;
+  margin: 0 auto;
+  position: relative;
+  z-index: 2;
+  padding: 0 20px;
+}
+/* Grey card with pink border and space for icons */
+.info-card {
+  background-color: #dedede;
+  border: 3px solid #ff85ff; /* Pink border effect */
+  border-radius: 12px;
+  display: flex;
+
+  justify-content: space-around;
+  padding: 50px 20px 100px;
+  text-align: center;
+}
+/* position Each info item */
+.info-item {
+  position: relative;
+  flex: 1;
+  padding: 0 15px;
+}
+
+/* Position Icons overlapping the top of the box */
+.icon-circle {
+  position: absolute;
+  top: -85px; /* Pull icon up out of the grey box */
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 45px;
+  color: #1a73e8;
+
+  border-radius: 10px;
+  padding: 5px;
+}
+
+.info-item h3 {
+  font-size: 18px;
+  font-weight: 700;
+  color: #000;
+  margin-bottom: 25px;
+}
+.info-item p {
+  font-size: 14px;
+  line-height: 1.6;
+  color: #333;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .top-section h1 {
+    font-size: 28px;
+  }
+
+  .top-section .subtitle {
+    font-size: 16px;
+
+  }
+
+  .info-item h3 {
+    font-size: 16px;
+  }
+
+  .info-item p {
+    font-size: 13px;
+  }
+
+  
+
+
+
+  
+}

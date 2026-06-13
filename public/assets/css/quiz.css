@@ -1,0 +1,155 @@
+/* ====== HERO SECTION ====== */
+/* Styles the top introductory part of the page */
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: "Kantumruy Pro", sans-serif;
+}
+
+html, body {
+    height: 100%;
+}
+
+body {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+footer {
+    margin-top: auto;
+}
+.hero {
+  display: block;
+  padding: 100px 18px 40px;
+  text-align: center;
+  max-width: 1000px;
+  margin: 0 auto; /* Centers the hero block horizontally */
+}
+
+.hero-title {
+  font-size: 52px;
+  font-weight: 900;
+  letter-spacing: 0.2px;
+}
+
+.hero-title span {
+  color: #040404; /* Specific color for highlighted text in the title */
+}
+
+.hero-sub {
+  white-space: normal;
+  margin-top: 18px;
+  font-size: 18px;
+  font-weight: 100;
+  line-height: 1.8; /* Increases readability of sub-text */
+  color: #333;
+}
+
+/* ====== CONTENT BACKGROUND ====== */
+/* Wrapper for the main quiz area */
+.content {
+  background: #d9d9d9;
+  padding: 34px 18px 80px;
+  height: 100%;
+}
+
+/* ====== GLOBAL RESET & DEFAULTS ====== */
+* {
+  margin: 0;
+  padding: 0;
+  font-family: "poppins", sans-serif; /* Clean, modern font choice */
+  box-sizing: border-box; /* Ensures padding doesn't affect the element's width */
+}
+
+body {
+  background: #d9d9d9;
+  color: aqua; /* Note: This is the default text color for the body */
+}
+
+/* ====== QUIZ CONTAINER (APP) ====== */
+/* The "Card" that holds the questions */
+.app {
+  background: #fff7f7;
+  width: 90%;
+  max-width: 600px;
+  margin: 100px auto; /* Large top margin to move the quiz down the page */
+  padding: 30px;
+  border-radius: 8px; /* Added for a softer look (optional) */
+}
+
+.app h1 {
+  font-size: 28px;
+  color: #040404;
+  font-weight: 500;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1),
+    0 4px 8px rgba(0, 0, 0, 0.1); /* Subtle shadow for depth */
+    padding: 10px 10px; 
+}
+
+/* ====== QUIZ COMPONENTS ====== */
+.quiz {
+  padding: 20px 0;
+}
+
+.quiz h2 {
+  font-size: 20px;
+  color: #040404;
+  font-weight: 500;
+}
+
+/* ====== BUTTONS (ANSWERS) ====== */
+.btn {
+  background: #fff;
+  color: #222;
+  font-weight: 500;
+  width: 100%; /* Makes buttons full width of the container */
+  border: 1px solid #222;
+  padding: 10px;
+  margin: 10px 0;
+  text-align: left;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.3s ease; /* Smooth transition for hover effects */
+}
+
+/* Hover effect for answer buttons */
+.btn:hover {
+  background: #040404;
+  color: #fff;
+}
+
+/* ====== NAVIGATION (NEXT BUTTON) ====== */
+#next-btn {
+  background: #000000;
+  color: #ffffff;
+  font-weight: 500;
+  width: 150px;
+  border: 0;
+  padding: 10px;
+  margin: 20px auto 0;
+  border-radius: 4px;
+  cursor: pointer;
+  display: block; /* Allows centering via margin: auto */
+}
+
+/* ====== STATE CLASSES (JAVASCRIPT TRIGGERED) ====== */
+/* These classes are added via JS when the user clicks an answer */
+
+.correct {
+  background: #11ff30; /* Bright green for correct answers */
+  color: #000;
+}
+
+.incorrect {
+  background: #ff0000; /* Bright red for wrong answers */
+  color: #fff;
+}
+
+.selected {
+  background: #ffeb3b; /* Yellow highlighting for the picked option */
+  color: #222;
+  border: 2px solid #333;
+}
