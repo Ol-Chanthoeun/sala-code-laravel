@@ -1,42 +1,103 @@
 @extends('layouts.admin')
 
+@section('title', 'Contact Messages')
+@section('page-title', 'Contact Messages')
+@section('breadcrumb', 'Contacts')
+
 @section('content')
 
-<h1>Contact Messages</h1>
+@if(session('success'))
+    <div style="
+        background:#d4edda;
+        color:#155724;
+        padding:12px;
+        border-radius:8px;
+        margin-bottom:20px;
+    ">
+        {{ session('success') }}
+    </div>
+@endif
 
-<table>
+<div class="data-table">
 
-    <thead>
+    <div class="table-header">
+        <h3>All Contact Messages</h3>
+    </div>
 
-        <tr>
-            <th>ID</th>
-            <th>Name</th>
-            <th>Email</th>
-            <th>Message</th>
-        </tr>
+    <div class="table-responsive">
 
-    </thead>
+        <table>
 
-    <tbody>
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>NAME</th>
+                    <th>EMAIL</th>
+                    <th>MESSAGE</th>
+                    <th>DATE</th>
+                    <th>ACTION</th>
+                </tr>
+            </thead>
 
-        @foreach ($contacts as $contact)
+            <tbody>
 
-            <tr>
+                @forelse($contacts as $contact)
 
-                <td>{{ $contact->id }}</td>
+                    <tr>
+                        <td>{{ $contact->id }}</td>
 
-                <td>{{ $contact->name }}</td>
+                        <td>{{ $contact->name }}</td>
 
-                <td>{{ $contact->email }}</td>
+                        <td>{{ $contact->email }}</td>
 
-                <td>{{ $contact->message }}</td>
+                        <td>{{ $contact->message }}</td>
 
-            </tr>
+                        <td>
+                            {{ $contact->created_at->format('M d, Y h:i A') }}
+                        </td>
 
-        @endforeach
+                        <td>
 
-    </tbody>
+                            <form action="{{ route('admin.contacts.delete', $contact->id) }}"
+                                  method="POST"
+                                  onsubmit="return confirm('Delete this message?')">
 
-</table>
+                                @csrf
+                                @method('DELETE')
+
+                                <button type="submit"
+                                        style="
+                                            background:#dc3545;
+                                            color:white;
+                                            border:none;
+                                            padding:8px 12px;
+                                            border-radius:5px;
+                                            cursor:pointer;
+                                        ">
+                                    Delete
+                                </button>
+
+                            </form>
+
+                        </td>
+                    </tr>
+
+                @empty
+
+                    <tr>
+                        <td colspan="6" style="text-align:center;">
+                            No messages found.
+                        </td>
+                    </tr>
+
+                @endforelse
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+</div>
 
 @endsection

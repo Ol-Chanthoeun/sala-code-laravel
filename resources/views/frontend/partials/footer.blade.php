@@ -12,11 +12,11 @@
             <h3>បណ្តាញសង្គម</h3>
 
             <div class="social-icons">
-                <a href="https://web.facebook.com/profile.php?id=61586520855760" target="_blank">
+                <a href="{{ $systemSettings['facebook_url'] ?: 'https://web.facebook.com/profile.php?id=61586520855760' }}" target="_blank">
                     <img src="{{ asset('assets/images/facebook.png') }}" alt="Facebook">
                 </a>
 
-                <a href="https://t.me/SalaCode007" target="_blank">
+                <a href="{{ $systemSettings['telegram_url'] ?: 'https://t.me/SalaCode007' }}" target="_blank">
                     <img src="{{ asset('assets/images/telegram.png') }}" alt="Telegram">
                 </a>
 
@@ -38,6 +38,6 @@
     </div>
 
     <div class="footer-bottom">
-        Copyright © 2026 សាលាកូដ. All rights reserved.
+        {{ $systemSettings['footer_text'] ?: 'Copyright © 2026 សាលាកូដ. All rights reserved.' }}
     </div>
 </footer>
