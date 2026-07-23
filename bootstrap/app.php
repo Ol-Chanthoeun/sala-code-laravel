@@ -11,7 +11,12 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware): void {
-        //
+        $middleware->appendToGroup('web', \App\Http\Middleware\ApplySystemSettings::class);
+        $middleware->appendToGroup('web', \App\Http\Middleware\LogUserActivity::class);
+        $middleware->alias([
+            'role' => \App\Http\Middleware\RoleMiddleware::class,
+            'system.feature' => \App\Http\Middleware\RequireSystemFeature::class,
+        ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         //

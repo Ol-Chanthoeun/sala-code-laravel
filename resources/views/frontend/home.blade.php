@@ -5,16 +5,20 @@
 {{-- Hero section --}}
 <section class="hero">
     <div class="hero-left">
-        <img src="{{ asset('assets/images/LearnOnline.png') }}" alt="Student">
+        <img src="{{ !empty($systemSettings['hero_image']) ? Storage::url($systemSettings['hero_image']) : asset('assets/images/LearnOnline.png') }}" alt="Student">
     </div>
 
     <div class="hero-right">
+        @if(!empty($systemSettings['hero_title']))
+        <h1>{{ $systemSettings['hero_title'] }}</h1>
+        @else
         <h1>
             សូមស្វាគមន៍មកកាន់
             <span class="colorShift">សាលាកូដអនឡាញ</span>
         </h1>
+        @endif
 
-        <p class="typing" id="typingText"></p>
+        @if(!empty($systemSettings['hero_subtitle']))<p>{{ $systemSettings['hero_subtitle'] }}</p>@else<p class="typing" id="typingText"></p>@endif
 
         <div class="hero-buttons">
             <button class="btn primary">
@@ -284,7 +288,7 @@ variables, functions និង events។
                 Join our platform today and start learning, practicing,
                 and debugging code like a pro.
             </p>
-            <button class="cta-btn">Sign Up Now!</button>
+            <a class="cta-btn" href="{{ auth()->check() ? (auth()->user()->isAdmin() || auth()->user()->isSuperAdmin() ? route('admin.dashboard') : route('courses')) : route('register') }}">Sign Up Now!</a>
         </div>
     </section>
     <!-- End Support -->

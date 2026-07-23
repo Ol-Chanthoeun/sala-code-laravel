@@ -1,39 +1,40 @@
 document.addEventListener("DOMContentLoaded", () => {
   const menuBtn = document.getElementById("menuBtn");
   const navLinks = document.getElementById("navLinks");
+  const menuIcon = menuBtn?.querySelector("i");
 
-  // ✅ Reset state on load (stop auto-open)
-  navLinks.classList.remove("open");
-  menuBtn.textContent = "☰";
-  menuBtn.setAttribute("aria-expanded", "false");
+  if (!menuBtn || !navLinks) {
+    return;
+  }
 
-  // Toggle open/close when clicking button
-  menuBtn.addEventListener("click", (e) => {
-    e.stopPropagation();
-
-    const isOpen = navLinks.classList.toggle("open");
-    menuBtn.textContent = isOpen ? "✖" : "☰";
+  const setMenuState = (isOpen) => {
+    navLinks.classList.toggle("open", isOpen);
     menuBtn.setAttribute("aria-expanded", isOpen ? "true" : "false");
+
+    if (menuIcon) {
+      menuIcon.classList.toggle("bx-menu", !isOpen);
+      menuIcon.classList.toggle("bx-x", isOpen);
+    }
+  };
+
+  setMenuState(false);
+
+  menuBtn.addEventListener("click", (event) => {
+    event.stopPropagation();
+    setMenuState(!navLinks.classList.contains("open"));
   });
 
-  // Close when clicking outside
-  document.addEventListener("click", (e) => {
-    if (!navLinks.classList.contains("open")) return;
+  document.addEventListener("click", (event) => {
+    if (!navLinks.classList.contains("open")) {
+      return;
+    }
 
-    if (!navLinks.contains(e.target) && !menuBtn.contains(e.target)) {
-      navLinks.classList.remove("open");
-      menuBtn.textContent = "☰";
-      menuBtn.setAttribute("aria-expanded", "false");
+    if (!navLinks.contains(event.target) && !menuBtn.contains(event.target)) {
+      setMenuState(false);
     }
   });
 
-  // Close when clicking a link
-  navLinks.querySelectorAll("a").forEach(a => {
-    a.addEventListener("click", () => {
-      navLinks.classList.remove("open");
-      menuBtn.textContent = "☰";
-      menuBtn.setAttribute("aria-expanded", "false");
-    });
+  navLinks.querySelectorAll("a, button").forEach((item) => {
+    item.addEventListener("click", () => setMenuState(false));
   });
 });
-
