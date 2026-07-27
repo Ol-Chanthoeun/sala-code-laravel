@@ -59,7 +59,7 @@
     <script>
         const questions = Array.from(document.querySelectorAll('.quiz-question'));
         let current = 0;
-        let secondsTotal = {{ $quiz->estimated_time * 60 }};
+        let secondsTotal = Number("{{ (int) ($quiz->estimated_time ?? 0) * 60 }}");
         let secondsLeft = secondsTotal;
         const progress = document.querySelector('#quizProgress');
         const counter = document.querySelector('#questionCounter');
