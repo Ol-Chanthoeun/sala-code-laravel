@@ -148,6 +148,26 @@
     font-size: 12px;
 }
 
+.quiz-stat.correct-stat {
+    background: #f0fdf4;
+    border: 1px solid #bbf7d0;
+}
+
+.quiz-stat.correct-stat strong,
+.quiz-stat.correct-stat span {
+    color: #166534;
+}
+
+.quiz-stat.incorrect-stat {
+    background: #fef2f2;
+    border: 1px solid #fecaca;
+}
+
+.quiz-stat.incorrect-stat strong,
+.quiz-stat.incorrect-stat span {
+    color: #991b1b;
+}
+
 .quiz-section {
     background: #fff;
     border: 1px solid #e2e8f0;

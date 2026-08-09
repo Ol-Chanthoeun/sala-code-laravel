@@ -42,7 +42,7 @@ class GoogleAuthTest extends TestCase
         Socialite::shouldReceive('driver')->with('google')->once()->andReturn($provider);
 
         $this->get(route('google.callback'))
-            ->assertRedirect(route('profile.show'));
+            ->assertRedirect(route('home'));
 
         $user = User::where('email', 'learner@example.com')->firstOrFail();
 
@@ -51,5 +51,27 @@ class GoogleAuthTest extends TestCase
         $this->assertSame(User::ROLE_USER, $user->role);
         $this->assertNotNull($user->email_verified_at);
         $this->assertNotNull($user->last_login_at);
+    }
+
+    public function test_inactive_google_account_is_not_authenticated(): void
+    {
+        $user = User::factory()->create([
+            'email' => 'disabled@example.com',
+            'google_id' => 'disabled-google-user',
+            'status' => User::STATUS_INACTIVE,
+        ]);
+        $provider = Mockery::mock();
+        $googleUser = Mockery::mock();
+        $googleUser->shouldReceive('getId')->andReturn($user->google_id);
+        $googleUser->shouldReceive('getEmail')->andReturn($user->email);
+        $provider->shouldReceive('redirectUrl')->once()->with(route('google.callback'))->andReturnSelf();
+        $provider->shouldReceive('user')->once()->andReturn($googleUser);
+        Socialite::shouldReceive('driver')->with('google')->once()->andReturn($provider);
+
+        $this->get(route('google.callback'))
+            ->assertRedirect(route('login'))
+            ->assertSessionHasErrors(['google' => 'Your account has been disabled. Please contact support.']);
+
+        $this->assertGuest();
     }
 }

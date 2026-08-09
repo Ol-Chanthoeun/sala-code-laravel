@@ -47,7 +47,13 @@
   box-shadow: 0 8px 20px rgba(0,0,0,.12);
 }
 .search-ic {
-  font-size: 22px;
+  align-items: center;
+  color: #64748b;
+  display: inline-flex;
+  flex: 0 0 auto;
+  font-size: 18px;
+  justify-content: center;
+  line-height: 1;
   padding-left: 10px;
 }
 .search input {
@@ -226,7 +232,6 @@
   }
 
   .search-ic {
-    font-size: 18px;
     padding-left: 6px;
   }
 }

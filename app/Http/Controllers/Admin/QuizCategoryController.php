@@ -20,7 +20,9 @@ class QuizCategoryController extends Controller
             ->orderBy('order_number')
             ->paginate(15);
 
-        return view('admin.quiz.categories.index', compact('categories'));
+        $languages = ProgrammingLanguage::orderBy('order_number')->get();
+
+        return view('admin.quiz.categories.index', compact('categories', 'languages'));
     }
 
     public function create(): View

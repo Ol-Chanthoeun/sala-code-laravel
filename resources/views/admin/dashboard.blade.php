@@ -5,6 +5,7 @@
 @section('breadcrumb', 'Dashboard')
 
 @section('content')
+    <div class="dashboard-stats">
     <div class="dashboard-cards">
         <div class="card">
             <div class="card-info">
@@ -83,10 +84,20 @@
         </div>
     </div>
 
-    <div class="two-columns">
-        <div class="data-table">
+    <div class="recent-tabs dashboard-recent-tabs" role="tablist" aria-label="Recent dashboard activity">
+        <button class="recent-tab active" type="button" role="tab" aria-selected="true" aria-controls="recent-users" data-tab="recent-users">Recently Registered Users</button>
+        <button class="recent-tab" type="button" role="tab" aria-selected="false" aria-controls="recent-lessons" data-tab="recent-lessons">Recently Added Lessons</button>
+        <button class="recent-tab" type="button" role="tab" aria-selected="false" aria-controls="recent-courses" data-tab="recent-courses">Recent Courses</button>
+        <button class="recent-tab" type="button" role="tab" aria-selected="false" aria-controls="recent-quizzes" data-tab="recent-quizzes">Recent Quizzes</button>
+        <button class="recent-tab" type="button" role="tab" aria-selected="false" aria-controls="recent-videos" data-tab="recent-videos">Recently Added Videos</button>
+    </div>
+    </div>
+
+    <div class="data-table recent-tabs-card">
+        <section class="recent-tab-panel" id="recent-users" role="tabpanel">
             <div class="table-header">
                 <h3>Recently Registered Users</h3>
+                <a href="{{ route('admin.users.index') }}">View All</a>
             </div>
             <div class="table-responsive">
                 <table>
@@ -114,11 +125,12 @@
                     </tbody>
                 </table>
             </div>
-        </div>
+        </section>
 
-        <div class="data-table">
+        <section class="recent-tab-panel" id="recent-lessons" role="tabpanel" hidden>
             <div class="table-header">
                 <h3>Recently Added Lessons</h3>
+                <a href="{{ route('admin.lessons.index') }}">View All</a>
             </div>
             <div class="table-responsive">
                 <table>
@@ -144,13 +156,12 @@
                     </tbody>
                 </table>
             </div>
-        </div>
-    </div>
+        </section>
 
-    <div class="two-columns" style="margin-top:25px;">
-        <div class="data-table">
+        <section class="recent-tab-panel" id="recent-courses" role="tabpanel" hidden>
             <div class="table-header">
                 <h3>Recent Courses</h3>
+                <a href="{{ route('admin.courses.index') }}">View All</a>
             </div>
             <div class="table-responsive">
                 <table>
@@ -176,24 +187,94 @@
                     </tbody>
                 </table>
             </div>
-        </div>
+        </section>
 
-        <div class="system-info">
-            <div class="section-title">Quick Actions</div>
-            <div class="quick-actions">
-                <a href="{{ route('admin.courses.create') }}" class="action-btn">
-                    <i class="fas fa-plus-circle"></i> Add Course
-                </a>
-                <a href="{{ route('admin.sections.create') }}" class="action-btn">
-                    <i class="fas fa-plus-circle"></i> Add Section
-                </a>
-                <a href="{{ route('admin.lessons.create') }}" class="action-btn">
-                    <i class="fas fa-plus-circle"></i> Add Lesson
-                </a>
-                <a href="{{ route('admin.quizzes.create') }}" class="action-btn">
-                    <i class="fas fa-plus-circle"></i> Add Quiz
-                </a>
+        <section class="recent-tab-panel" id="recent-quizzes" role="tabpanel" hidden>
+            <div class="table-header">
+                <h3>Recent Quizzes</h3>
+                <a href="{{ route('admin.quizzes.index') }}">View All</a>
             </div>
+            <div class="table-responsive">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Quiz</th>
+                            <th>Language</th>
+                            <th>Difficulty</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @forelse($recentQuizzes as $quiz)
+                            <tr>
+                                <td>{{ $quiz->title }}</td>
+                                <td>{{ $quiz->programmingLanguage?->name }}</td>
+                                <td>{{ ucfirst($quiz->difficulty) }}</td>
+                                <td>{{ ucfirst($quiz->status) }}</td>
+                            </tr>
+                        @empty
+                            <tr>
+                                <td colspan="4" style="text-align:center;">No quizzes yet</td>
+                            </tr>
+                        @endforelse
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <section class="recent-tab-panel" id="recent-videos" role="tabpanel" hidden>
+            <div class="table-header"><h3>Recently Added Videos</h3><a href="{{ route('admin.videos.index') }}">View All</a></div>
+            <div class="table-responsive">
+                <table><thead><tr><th>Video</th><th>Playlist</th><th>Status</th><th>Date</th></tr></thead><tbody>
+                @forelse($recentVideos as $video)
+                    <tr><td>{{ $video->title }}</td><td>{{ $video->playlist?->name }}</td><td>{{ ucfirst($video->status) }}</td><td>{{ $video->created_at?->format('M d, Y') }}</td></tr>
+                @empty
+                    <tr><td colspan="4" style="text-align:center;">No videos yet</td></tr>
+                @endforelse
+                </tbody></table>
+            </div>
+        </section>
+    </div>
+
+    <div class="system-info">
+        <div class="section-title">Quick Actions</div>
+        <div class="quick-actions">
+            <a href="{{ route('admin.courses.create') }}" class="action-btn">
+                <i class="fas fa-plus-circle"></i> Add Course
+            </a>
+            <a href="{{ route('admin.sections.create') }}" class="action-btn">
+                <i class="fas fa-plus-circle"></i> Add Section
+            </a>
+            <a href="{{ route('admin.lessons.create') }}" class="action-btn">
+                <i class="fas fa-plus-circle"></i> Add Lesson
+            </a>
+            <a href="{{ route('admin.quizzes.create') }}" class="action-btn">
+                <i class="fas fa-plus-circle"></i> Add Quiz
+            </a>
+            <a href="{{ route('admin.videos.create') }}" class="action-btn">
+                <i class="fas fa-plus-circle"></i> Add Video
+            </a>
+            <a href="{{ route('admin.video-playlists.create') }}" class="action-btn">
+                <i class="fas fa-plus-circle"></i> Add Playlist ({{ $totalVideoPlaylists }})
+            </a>
         </div>
     </div>
 @endsection
+
+@push('scripts')
+    <script>
+        document.querySelectorAll('.recent-tab').forEach((tab) => {
+            tab.addEventListener('click', () => {
+                document.querySelectorAll('.recent-tab').forEach((item) => {
+                    const active = item === tab;
+                    item.classList.toggle('active', active);
+                    item.setAttribute('aria-selected', active ? 'true' : 'false');
+                });
+
+                document.querySelectorAll('.recent-tab-panel').forEach((panel) => {
+                    panel.hidden = panel.id !== tab.dataset.tab;
+                });
+            });
+        });
+    </script>
+@endpush

@@ -10,8 +10,8 @@ class UserUpdateRequest extends FormRequest
 {
     public function authorize(): bool
     {
-        return $this->user()?->role === User::ROLE_ADMIN
-            || $this->user()?->role === User::ROLE_SUPER_ADMIN;
+        $target = $this->route('user');
+        return $target instanceof User && $this->user()?->can('update', $target);
     }
 
     /**
@@ -23,6 +23,8 @@ class UserUpdateRequest extends FormRequest
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'email', 'max:255', Rule::unique('users')->ignore($this->route('user'))],
             'status' => ['required', Rule::in([User::STATUS_ACTIVE, User::STATUS_INACTIVE])],
+            'role' => ['prohibited'],
+            'edit_user_id' => ['sometimes', 'integer'],
         ];
     }
 }

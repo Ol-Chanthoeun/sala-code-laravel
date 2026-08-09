@@ -20,7 +20,7 @@
     <main class="content">
         <div class="search-wrap">
             <div class="search">
-                <span class="search-ic">🔍</span>
+                <span class="search-ic"><i class="fa-solid fa-magnifying-glass" aria-hidden="true"></i></span>
                 <input id="searchInput" type="text" placeholder="ស្វែងរកថ្នាក់រៀន..." />
                 <button id="searchBtn" type="button">ស្វែងរក</button>
             </div>
@@ -80,4 +80,3 @@
 @push('scripts')
     <script src="{{ asset('assets/js/course.js') }}"></script>
 @endpush
-

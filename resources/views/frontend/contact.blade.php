@@ -184,6 +184,13 @@
         resize: vertical;
     }
 
+    .field-error {
+        color: #b91c1c;
+        display: block;
+        font-size: 14px;
+        margin-top: 6px;
+    }
+
     .btn-submit {
         width: 100%;
         padding: 15px;
@@ -325,27 +332,37 @@
                         <label>
                             <i class="fas fa-user"></i> Full Name
                         </label>
-                        <input type="text" name="name" value="{{ old('name') }}" required>
+                        <input type="text" name="name" value="{{ old('name', auth()->user()?->name) }}" minlength="2" maxlength="100" required @auth readonly @endauth>
+                        @error('name')<span class="field-error">{{ $message }}</span>@enderror
                     </div>
 
                     <div class="form-group">
                         <label>
                             <i class="fas fa-envelope"></i> Email Address
                         </label>
-                        <input type="email" name="email" value="{{ old('email') }}" required>
+                        <input type="email" name="email" value="{{ old('email', auth()->user()?->email) }}" maxlength="255" required @auth readonly @endauth>
+                        @error('email')<span class="field-error">{{ $message }}</span>@enderror
                     </div>
 
                     <div class="form-group">
                         <label>
                             <i class="fas fa-comment"></i> Message
                         </label>
-                        <textarea name="message" required>{{ old('message') }}</textarea>
+                        <textarea name="message" minlength="10" maxlength="1000" required>{{ old('message') }}</textarea>
+                        @error('message')<span class="field-error">{{ $message }}</span>@enderror
                     </div>
 
-                    <button type="submit" class="btn-submit">
-                        <i class="fas fa-paper-plane"></i>
-                        Send Message
-                    </button>
+                    @auth
+                        <button type="submit" class="btn-submit">
+                            <i class="fas fa-paper-plane"></i>
+                            Send Message
+                        </button>
+                    @else
+                        <button type="button" class="btn-submit" onclick="window.location.href='{{ route('login') }}'">
+                            <i class="fas fa-paper-plane"></i>
+                            Send Message
+                        </button>
+                    @endauth
                 </form>
             </div>
 

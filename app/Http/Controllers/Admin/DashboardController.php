@@ -10,6 +10,7 @@ use App\Models\Lesson;
 use App\Models\LessonExample;
 use App\Models\Quiz;
 use App\Models\Video;
+use App\Models\VideoPlaylist;
 use App\Models\User;
 
 class DashboardController extends Controller
@@ -24,12 +25,15 @@ class DashboardController extends Controller
         $totalLessons = Lesson::count();
         $totalExamples = LessonExample::count();
         $totalVideos = Video::count();
+        $totalVideoPlaylists = VideoPlaylist::count();
         $totalTests = Quiz::count();
 
         $recentContacts = Contact::latest()->take(5)->get();
         $recentUsers = User::latest()->take(5)->get();
         $recentCourses = Course::latest()->take(5)->get();
         $recentLessons = Lesson::latest()->take(5)->get();
+        $recentQuizzes = Quiz::with('programmingLanguage')->latest()->take(5)->get();
+        $recentVideos = Video::with('playlist')->latest()->take(5)->get();
 
         return view('admin.dashboard', compact(
             'totalContacts',
@@ -40,11 +44,14 @@ class DashboardController extends Controller
             'totalLessons',
             'totalExamples',
             'totalVideos',
+            'totalVideoPlaylists',
             'totalTests',
             'recentContacts',
             'recentUsers',
             'recentCourses',
-            'recentLessons'
+            'recentLessons',
+            'recentQuizzes',
+            'recentVideos'
         ));
     }
 

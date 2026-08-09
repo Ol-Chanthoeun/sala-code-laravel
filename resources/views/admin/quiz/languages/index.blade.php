@@ -5,9 +5,11 @@
 @section('breadcrumb', 'Quiz Languages')
 
 @section('content')
-    <a href="{{ route('admin.programming-languages.create') }}" class="action-btn" style="width:220px;margin-bottom:20px;">
-        <i class="fas fa-plus-circle"></i> Add Language
-    </a>
+    <div class="admin-sticky-toolbar">
+        <a href="{{ route('admin.programming-languages.create', ['modal' => 1]) }}" class="action-btn admin-primary-action admin-modal-form-link" data-modal-title="Add Quiz Language" style="width:220px;margin-bottom:20px;">
+            <i class="fas fa-plus-circle"></i> Add Language
+        </a>
+    </div>
 
     @if(session('success'))
         <p style="color:green;margin-bottom:15px;">{{ session('success') }}</p>
@@ -40,12 +42,14 @@
                             <td>{{ $language->categories_count }}</td>
                             <td>{{ $language->quizzes_count }}</td>
                             <td>
-                                <a href="{{ route('admin.programming-languages.edit', $language) }}">Edit</a>
-                                <form action="{{ route('admin.programming-languages.destroy', $language) }}" method="POST" style="display:inline;margin-left:8px;">
-                                    @csrf
-                                    @method('DELETE')
-                                    <button type="submit" onclick="return confirm('Delete this language and all quizzes?')">Delete</button>
-                                </form>
+                                <div class="admin-table-actions">
+                                    <a class="admin-icon-btn admin-icon-btn--edit admin-modal-form-link" href="{{ route('admin.programming-languages.edit', ['programming_language' => $language, 'modal' => 1]) }}" data-modal-title="Edit Quiz Language" title="Edit Language" aria-label="Edit Language"><i class="fas fa-pen" aria-hidden="true"></i></a>
+                                    <form class="admin-destructive-form" action="{{ route('admin.programming-languages.destroy', $language) }}" method="POST" data-confirm-title="Confirm Delete Quiz Language" data-confirm-message="Are you sure you want to delete this language and its quizzes?" data-confirm-item="{{ $language->name }}" data-confirm-label="Delete Language">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button class="admin-icon-btn admin-icon-btn--danger" type="submit" title="Delete Language" aria-label="Delete Language"><i class="fas fa-trash" aria-hidden="true"></i></button>
+                                    </form>
+                                </div>
                             </td>
                         </tr>
                     @empty
@@ -56,5 +60,5 @@
         </div>
     </div>
 
-    <div style="margin-top:20px;">{{ $languages->links() }}</div>
+    {{ $languages->links('admin.partials.pagination') }}
 @endsection

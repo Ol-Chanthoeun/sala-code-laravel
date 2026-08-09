@@ -20,6 +20,7 @@ class User extends Authenticatable
 
     public const STATUS_ACTIVE = 'active';
     public const STATUS_INACTIVE = 'inactive';
+    public const PRIMARY_SUPER_ADMIN_EMAIL = 'superadmin@example.com';
 
     /**
      * The attributes that are mass assignable.
@@ -79,6 +80,21 @@ class User extends Authenticatable
     public function isActive(): bool
     {
         return $this->status === self::STATUS_ACTIVE;
+    }
+
+    public function usesGoogleAuthentication(): bool
+    {
+        return filled($this->google_id);
+    }
+
+    public function authProviderLabel(): string
+    {
+        return $this->usesGoogleAuthentication() ? 'Google' : 'Email';
+    }
+
+    public function isProtectedPrimarySuperAdmin(): bool
+    {
+        return $this->isSuperAdmin() && strcasecmp($this->email, self::PRIMARY_SUPER_ADMIN_EMAIL) === 0;
     }
 
     public function courses(): HasMany

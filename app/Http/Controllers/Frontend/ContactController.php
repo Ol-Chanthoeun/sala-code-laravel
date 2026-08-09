@@ -8,22 +8,30 @@ use App\Models\Contact;
 
 class ContactController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
+        if (! $request->user()) {
+            $request->session()->put('url.intended', route('contact'));
+        }
+
         return view('frontend.contact');
     }
 
     public function store(Request $request)
     {
-        Contact::create([
-
-            'name' => $request->name,
-
-            'email' => $request->email,
-
-            'message' => $request->message,
-
+        $request->merge([
+            'name' => trim(strip_tags((string) $request->user()->name)),
+            'email' => trim(strip_tags((string) $request->user()->email)),
+            'message' => trim(strip_tags((string) $request->input('message'))),
         ]);
+
+        $validated = $request->validate([
+            'name' => ['required', 'string', 'min:2', 'max:100'],
+            'email' => ['required', 'email', 'max:255'],
+            'message' => ['required', 'string', 'min:10', 'max:1000'],
+        ]);
+
+        Contact::create($validated);
 
         return redirect()
             ->back()

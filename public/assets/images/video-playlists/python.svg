@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 360" role="img" aria-labelledby="title">
+  <title id="title">Python logo</title>
+  <rect width="640" height="360" rx="28" fill="#f7fafc"/>
+  <g transform="translate(196 52)">
+    <path d="M124 0c-69 0-65 30-65 30v35h67v11H32S0 72 0 139s28 65 28 65h34v-48s-2-28 28-28h109s27 0 27-27V34s4-34-62-34zm-37 23a12 12 0 1 1 0 24 12 12 0 0 1 0-24z" fill="#3776ab"/>
+    <path d="M124 256c69 0 65-30 65-30v-35h-67v-11h94s32 4 32-63-28-65-28-65h-34v48s2 28-28 28H49s-27 0-27 27v67s-4 34 62 34zm37-23a12 12 0 1 1 0-24 12 12 0 0 1 0 24z" fill="#ffd343"/>
+  </g>
+</svg>

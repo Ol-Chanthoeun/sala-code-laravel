@@ -158,8 +158,9 @@
             margin-top: 6px;
         }
     </style>
+    @stack('styles')
 </head>
-<body>
+<body class="@yield('body-class')">
     <main class="auth-box">
         <a class="brand" href="{{ route('home') }}">
             <img src="{{ asset('assets/images/SalaCode-Logo.png') }}" alt="Sala Code">
@@ -184,5 +185,6 @@
 
         @yield('content')
     </main>
+    @stack('scripts')
 </body>
 </html>

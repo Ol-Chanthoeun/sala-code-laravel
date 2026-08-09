@@ -19,6 +19,8 @@ class DatabaseSeeder extends Seeder
         $this->call(CProgrammingTestSeeder::class);
         $this->call(ProgrammingCourseExpansionSeeder::class);
         $this->call(LmsQuizSeeder::class);
+        $this->call(CProgrammingVideoSeeder::class);
+        $this->call(CppPythonVideoSeeder::class);
 
         User::factory()->firstOrCreate([
             'email' => 'test@example.com',

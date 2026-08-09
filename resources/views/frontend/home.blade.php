@@ -151,7 +151,7 @@
         <!-- Bottom cards -->
         <div class="course-cards">
             <div class="course-card">
-                <h3>🌐 HTML ដំបូង</h3>
+                <h3><span class="course-card__icon course-card__icon--html"><i class="fa-brands fa-html5" aria-hidden="true"></i></span><span>HTML ដំបូង</span></h3>
                 <p>
                     រៀនសរសេរគេហទំព័រដំបូងរបស់អ្នក។ ស្វែងយល់ពី tags, 
 elements និង structure។
@@ -159,7 +159,7 @@ elements និង structure។
             </div>
 
             <div class="course-card">
-                <h3>🎨 CSS Styling</h3>
+                <h3><span class="course-card__icon course-card__icon--css"><i class="fa-brands fa-css3-alt" aria-hidden="true"></i></span><span>CSS Styling</span></h3>
                 <p>
                     ធ្វើឱ្យគេហទំព័ររបស់អ្នកស្អាតតាមរយៈ colors, fonts 
 និង layouts។
@@ -167,7 +167,7 @@ elements និង structure។
             </div>
 
             <div class="course-card">
-                <h3>⚡ JavaScript Basics</h3>
+                <h3><span class="course-card__icon course-card__icon--javascript"><i class="fa-brands fa-js" aria-hidden="true"></i></span><span>JavaScript Basics</span></h3>
                 <p>
                     បន្ថែម interactivity ទៅគេហទំព័ររបស់អ្នក។ រៀនអំពី 
 variables, functions និង events។
