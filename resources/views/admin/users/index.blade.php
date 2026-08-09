@@ -5,15 +5,25 @@
 @section('breadcrumb', 'Users')
 
 @section('content')
+    @if(auth()->user()->isSuperAdmin())
+        <div class="users-create-admin-sticky">
+            <a href="{{ route('admin.admins.create') }}"
+               class="action-btn admin-primary-action admin-modal-form-link"
+               data-modal-title="Create Admin"
+               style="width:190px;">
+                <i class="fas fa-user-shield"></i> Create Admin
+            </a>
+        </div>
+    @endif
     @if(session('success'))
         <p style="color:green;margin-bottom:15px;">{{ session('success') }}</p>
     @endif
 
-    @if($errors->any())
+    @if($errors->any() && ! old('edit_user_id'))
         <p style="color:#dc2626;margin-bottom:15px;">{{ $errors->first() }}</p>
     @endif
 
-    <div class="system-info" style="margin-bottom:20px;">
+    <div class="system-info admin-sticky-toolbar users-filter-toolbar" style="margin-bottom:20px;">
         <form method="GET" action="{{ route('admin.users.index') }}" style="display:grid;grid-template-columns:2fr 1fr auto;gap:12px;align-items:end;">
             <p>
                 <label>Search users</label><br>
@@ -32,93 +42,81 @@
         </form>
     </div>
 
-    <div class="data-table">
+    <div class="data-table users-data-table">
         <div class="table-header">
             <h3>Registered Users</h3>
+            @include('admin.reports._quick-export', ['reportType' => 'users'])
         </div>
 
-        <div class="table-responsive">
+        <div class="table-responsive users-table-responsive">
             <table class="users-table">
                 <thead>
                     <tr>
-                        <th>User name</th>
-                        <th>Email</th>
-                        <th>Current role</th>
-                        <th>Account status</th>
-                        <th>Registration date</th>
+                        <th>User</th>
+                        <th>Auth provider</th>
+                        <th>Role</th>
+                        <th>Status</th>
+                        <th>Registered</th>
                         <th class="users-actions-heading">Actions</th>
                     </tr>
                 </thead>
                 <tbody>
                     @forelse($users as $managedUser)
                         <tr>
-                            <td>{{ $managedUser->name }}</td>
-                            <td>{{ $managedUser->email }}</td>
-                            <td>{{ $roles[$managedUser->role] ?? $managedUser->role }}</td>
-                            <td>{{ ucfirst($managedUser->status) }}</td>
+                            <td class="users-identity-cell">
+                                <strong>{{ $managedUser->name }}</strong>
+                                <span title="{{ $managedUser->email }}">{{ $managedUser->email }}</span>
+                            </td>
+                            <td><span class="auth-provider-badge auth-provider-badge--{{ strtolower($managedUser->authProviderLabel()) }}">{{ $managedUser->authProviderLabel() }}</span></td>
+                            <td><span class="user-meta-badge user-meta-badge--role">{{ $roles[$managedUser->role] ?? $managedUser->role }}</span></td>
+                            <td><span class="user-meta-badge user-meta-badge--{{ $managedUser->isActive() ? 'active' : 'inactive' }}">{{ ucfirst($managedUser->status) }}</span></td>
                             <td>{{ $managedUser->created_at?->format('Y-m-d') }}</td>
                             <td class="users-actions-cell">
                                 @php
                                     $currentUser = auth()->user();
-                                    $canEditUser = ! ($currentUser->isAdmin() && $managedUser->isSuperAdmin());
-                                    $canChangeRoles = $currentUser->isSuperAdmin();
+                                    $canEditUser = $currentUser->can('update', $managedUser);
+                                    $canChangeStatus = $currentUser->can('changeStatus', $managedUser);
+                                    $canDeleteUser = $currentUser->can('delete', $managedUser);
+                                    $canChangeRoles = $currentUser->can('changeRole', $managedUser);
+                                    $canSendPasswordReset = $currentUser->can('sendPasswordReset', $managedUser);
                                 @endphp
 
-                                @if($canEditUser || $canChangeRoles)
-                                    <div class="user-actions">
-                                        <div class="user-actions__row user-actions__row--primary">
+                                @if($managedUser->isProtectedPrimarySuperAdmin())
+                                    <span class="user-actions-empty">Protected</span>
+                                @elseif($managedUser->isSuperAdmin())
+                                    <span class="user-actions-empty">Restricted</span>
+                                @elseif($canEditUser || $canChangeStatus || $canDeleteUser || $canChangeRoles || $canSendPasswordReset)
+                                    <div class="user-actions-compact">
                                             @if($canEditUser)
-                                                <a class="user-action-btn user-action-btn--neutral" href="{{ route('admin.users.edit', $managedUser) }}">
-                                                    Edit
-                                                </a>
+                                                <button class="admin-icon-btn admin-icon-btn--edit edit-user-trigger" type="button" title="Edit User" aria-label="Edit User" data-user-id="{{ $managedUser->id }}" data-update-url="{{ route('admin.users.update', $managedUser) }}" data-role-update-url="{{ route('admin.users.update-role', $managedUser) }}" data-user-name="{{ $managedUser->name }}" data-user-email="{{ $managedUser->email }}" data-user-status="{{ $managedUser->status }}" data-user-role="{{ $managedUser->role }}" data-can-edit-role="{{ $canChangeRoles ? '1' : '0' }}" data-requires-role-confirm="{{ auth()->id() === $managedUser->id && $managedUser->isSuperAdmin() ? '1' : '0' }}">
+                                                    <i class="fas fa-pen" aria-hidden="true"></i>
+                                                </button>
                                             @endif
-
-                                            @if($canChangeRoles)
-                                                <form class="user-role-form" action="{{ route('admin.users.update-role', $managedUser) }}" method="POST">
-                                                    @csrf
-                                                    @method('PATCH')
-
-                                                    <div class="user-role-form__controls">
-                                                        <select class="user-role-select" name="role" aria-label="Change role for {{ $managedUser->name }}">
-                                                            <option value="user" @selected($managedUser->role === 'user')>User</option>
-                                                            <option value="admin" @selected($managedUser->role === 'admin')>Admin</option>
-                                                            <option value="super_admin" @selected($managedUser->role === 'super_admin')>Super Admin</option>
-                                                        </select>
-
-                                                        <button class="user-action-btn user-action-btn--primary" type="submit" onclick="return confirm('Change this user role?')">
-                                                            Update Role
-                                                        </button>
+                                            @if($canChangeStatus || $canSendPasswordReset || $canDeleteUser)
+                                                <details class="user-more-actions">
+                                                    <summary class="admin-icon-btn user-more-actions__toggle" title="More Actions" aria-label="More Actions"><i class="fas fa-ellipsis-vertical" aria-hidden="true"></i></summary>
+                                                    <div class="user-more-actions__menu">
+                                                        @if($canChangeStatus)
+                                                            <form class="user-confirm-form" action="{{ route('admin.users.toggle-status', $managedUser) }}" method="POST" data-confirm-action="{{ $managedUser->status === 'active' ? 'deactivate' : 'activate' }}" data-user-name="{{ $managedUser->name }}" data-user-email="{{ $managedUser->email }}" data-current-role="{{ $roles[$managedUser->role] ?? $managedUser->role }}">
+                                                                @csrf @method('PATCH')
+                                                                <button class="user-more-actions__item user-more-actions__item--{{ $managedUser->status === 'active' ? 'status' : 'activate' }}" type="submit"><i class="fas {{ $managedUser->status === 'active' ? 'fa-user-slash' : 'fa-user-check' }}"></i>{{ $managedUser->status === 'active' ? 'Deactivate User' : 'Activate User' }}</button>
+                                                            </form>
+                                                        @endif
+                                                        @if($canSendPasswordReset)
+                                                            <form class="user-confirm-form" action="{{ route('admin.users.password-reset', $managedUser) }}" method="POST" data-confirm-action="reset-password" data-user-name="{{ $managedUser->name }}" data-user-email="{{ $managedUser->email }}" data-current-role="{{ $roles[$managedUser->role] ?? $managedUser->role }}">
+                                                                @csrf
+                                                                <button class="user-more-actions__item user-more-actions__item--reset" type="submit"><i class="fas fa-key"></i>Send Reset Link</button>
+                                                            </form>
+                                                        @endif
+                                                        @if($canDeleteUser)
+                                                            <form class="user-confirm-form" action="{{ route('admin.users.destroy', $managedUser) }}" method="POST" data-confirm-action="delete" data-user-name="{{ $managedUser->name }}" data-user-email="{{ $managedUser->email }}" data-current-role="{{ $roles[$managedUser->role] ?? $managedUser->role }}">
+                                                                @csrf @method('DELETE')
+                                                                <button class="user-more-actions__item user-more-actions__item--delete" type="submit"><i class="fas fa-trash"></i>Delete User</button>
+                                                            </form>
+                                                        @endif
                                                     </div>
-
-                                                    @if(auth()->id() === $managedUser->id && $managedUser->isSuperAdmin())
-                                                        <label class="user-role-confirm">
-                                                            <input type="checkbox" name="confirm_self_role_change" value="1">
-                                                            <span>Confirm changing your own Super Admin role</span>
-                                                        </label>
-                                                    @endif
-                                                </form>
+                                                </details>
                                             @endif
-                                        </div>
-
-                                        @if($canEditUser)
-                                            <div class="user-actions__row user-actions__row--secondary">
-                                                <form class="user-action-form" action="{{ route('admin.users.toggle-status', $managedUser) }}" method="POST">
-                                                    @csrf
-                                                    @method('PATCH')
-                                                    <button class="user-action-btn user-action-btn--warning" type="submit" onclick="return confirm('Change this account status?')">
-                                                        {{ $managedUser->status === 'active' ? 'Deactivate' : 'Activate' }}
-                                                    </button>
-                                                </form>
-
-                                                <form class="user-action-form" action="{{ route('admin.users.destroy', $managedUser) }}" method="POST">
-                                                    @csrf
-                                                    @method('DELETE')
-                                                    <button class="user-action-btn user-action-btn--danger" type="submit" onclick="return confirm('Delete this user?')">
-                                                        Delete
-                                                    </button>
-                                                </form>
-                                            </div>
-                                        @endif
                                     </div>
                                 @else
                                     <span class="user-actions-empty">Restricted</span>
@@ -136,6 +134,289 @@
     </div>
 
     <div style="margin-top:20px;">
-        {{ $users->links() }}
+        {{ $users->links('admin.partials.pagination') }}
     </div>
+
+    <dialog class="admin-confirm-dialog edit-user-dialog" id="editUserDialog" aria-labelledby="editUserDialogTitle">
+        <div class="admin-confirm-dialog__panel edit-user-dialog__panel">
+            <div class="admin-confirm-dialog__header">
+                <div class="admin-confirm-dialog__title">
+                    <i class="fas fa-user-pen" aria-hidden="true"></i>
+                    <div>
+                        <h3 id="editUserDialogTitle">Edit User</h3>
+                        <small id="editUserSubtitle"></small>
+                    </div>
+                </div>
+                <button class="admin-confirm-dialog__close" id="closeEditUser" type="button" aria-label="Close">&times;</button>
+            </div>
+
+            <div class="edit-user-dialog__errors" id="editUserErrors" hidden></div>
+
+            <form class="edit-user-form" id="editUserForm" method="POST">
+                @csrf
+                @method('PUT')
+                <input id="editUserId" type="hidden" name="edit_user_id">
+
+                <label>Full Name<input id="editUserName" type="text" name="name" required maxlength="255"></label>
+                <label>Email<input id="editUserEmail" type="email" name="email" required maxlength="255"></label>
+                <label>Account Status
+                    <select id="editUserStatus" name="status" required>
+                        <option value="active">Active</option>
+                        <option value="inactive">Inactive</option>
+                    </select>
+                </label>
+                <label>Role
+                    <span class="edit-user-role-controls">
+                        <select id="editUserRole" name="role" form="editUserRoleForm">
+                            <option value="user">User</option>
+                            <option value="admin">Admin</option>
+                        </select>
+                        <button class="admin-icon-btn admin-icon-btn--primary" id="editUserRoleSubmit" form="editUserRoleForm" type="submit" title="Update Role" aria-label="Update Role"><i class="fas fa-check"></i></button>
+                    </span>
+                </label>
+
+                <div class="edit-user-role-confirm" id="editUserRoleConfirm" hidden>
+                    <label class="user-role-confirm">
+                        <input id="editUserRoleConfirmation" type="checkbox" name="confirm_self_role_change" value="1">
+                        <span>Confirm changing your own Super Admin role</span>
+                    </label>
+                </div>
+
+                <div class="admin-confirm-dialog__actions">
+                    <button class="admin-confirm-dialog__cancel" id="cancelEditUser" type="button">Cancel</button>
+                    <button class="admin-confirm-dialog__confirm" type="submit">Save Changes</button>
+                </div>
+            </form>
+            <form class="user-role-form" id="editUserRoleForm" method="POST">
+                @csrf
+                @method('PATCH')
+            </form>
+        </div>
+    </dialog>
+
+    <dialog class="admin-confirm-dialog" id="adminConfirmDialog" aria-labelledby="adminConfirmDialogTitle">
+        <div class="admin-confirm-dialog__panel">
+            <div class="admin-confirm-dialog__header">
+                <div class="admin-confirm-dialog__title">
+                    <i class="fas fa-user-shield" aria-hidden="true"></i>
+                    <h3 id="adminConfirmDialogTitle">Confirm Action</h3>
+                </div>
+                <button class="admin-confirm-dialog__close" id="closeRoleChange" type="button" aria-label="Close">&times;</button>
+            </div>
+            <p id="adminConfirmDialogMessage"></p>
+            <p class="admin-confirm-dialog__note" id="adminConfirmDialogNote" hidden></p>
+            <dl>
+                <div><dt>User</dt><dd id="adminConfirmUser"></dd></div>
+                <div id="adminConfirmEmailRow"><dt>Email</dt><dd id="adminConfirmEmail"></dd></div>
+                <div id="adminConfirmRoleRow"><dt>Current Role</dt><dd id="adminConfirmRole"></dd></div>
+                <div class="admin-confirm-dialog__role-change" id="adminConfirmRoleChange" hidden>
+                    <div><dt>Current Role</dt><dd id="adminConfirmCurrentRole"></dd></div>
+                    <i class="fas fa-arrow-right" aria-hidden="true"></i>
+                    <div><dt>New Role</dt><dd id="adminConfirmNewRole"></dd></div>
+                </div>
+            </dl>
+            <div class="admin-confirm-dialog__actions">
+                <button class="admin-confirm-dialog__cancel" id="cancelRoleChange" type="button">Cancel</button>
+                <button class="admin-confirm-dialog__confirm" id="confirmAdminAction" type="button">Confirm</button>
+            </div>
+        </div>
+    </dialog>
 @endsection
+
+@push('scripts')
+    <script>
+        (() => {
+            const menus = document.querySelectorAll('.user-more-actions');
+
+            menus.forEach((menu) => {
+                menu.addEventListener('toggle', () => {
+                    if (!menu.open) return;
+                    menus.forEach((other) => {
+                        if (other !== menu) other.removeAttribute('open');
+                    });
+                });
+            });
+
+            document.addEventListener('click', (event) => {
+                menus.forEach((menu) => {
+                    if (!menu.contains(event.target)) menu.removeAttribute('open');
+                });
+            });
+        })();
+
+        (() => {
+            const dialog = document.getElementById('editUserDialog');
+            const form = document.getElementById('editUserForm');
+            const role = document.getElementById('editUserRole');
+            const roleForm = document.getElementById('editUserRoleForm');
+            const roleSubmit = document.getElementById('editUserRoleSubmit');
+            const roleConfirm = document.getElementById('editUserRoleConfirm');
+            let activeTrigger = null;
+
+            const updateRoleConfirmation = () => {
+                roleConfirm.hidden = !activeTrigger
+                    || activeTrigger.dataset.requiresRoleConfirm !== '1'
+                    || role.value === 'super_admin';
+            };
+
+            const openEditModal = (trigger, values = {}, errors = []) => {
+                activeTrigger = trigger;
+                form.action = trigger.dataset.updateUrl;
+                document.getElementById('editUserId').value = trigger.dataset.userId;
+                document.getElementById('editUserName').value = values.name ?? trigger.dataset.userName;
+                document.getElementById('editUserEmail').value = values.email ?? trigger.dataset.userEmail;
+                document.getElementById('editUserStatus').value = values.status ?? trigger.dataset.userStatus;
+                role.value = values.role ?? trigger.dataset.userRole;
+                role.disabled = trigger.dataset.canEditRole !== '1';
+                roleSubmit.hidden = trigger.dataset.canEditRole !== '1';
+                roleForm.action = trigger.dataset.roleUpdateUrl;
+                roleForm.dataset.userName = trigger.dataset.userName;
+                roleForm.dataset.userEmail = trigger.dataset.userEmail;
+                roleForm.dataset.currentRole = trigger.dataset.userRole === 'admin' ? 'Admin' : 'User';
+                document.getElementById('editUserRoleConfirmation').checked = values.confirmSelfRoleChange === '1';
+                document.getElementById('editUserSubtitle').textContent = trigger.dataset.userName;
+
+                const errorBox = document.getElementById('editUserErrors');
+                errorBox.replaceChildren(...errors.map((error) => {
+                    const item = document.createElement('p');
+                    item.textContent = error;
+                    return item;
+                }));
+                errorBox.hidden = errors.length === 0;
+                updateRoleConfirmation();
+                dialog.showModal();
+                document.body.classList.add('admin-modal-open');
+            };
+
+            document.querySelectorAll('.edit-user-trigger').forEach((trigger) => {
+                trigger.addEventListener('click', () => openEditModal(trigger));
+            });
+            role.addEventListener('change', updateRoleConfirmation);
+            document.getElementById('cancelEditUser').addEventListener('click', () => dialog.close());
+            document.getElementById('closeEditUser').addEventListener('click', () => dialog.close());
+            dialog.addEventListener('click', (event) => {
+                if (event.target === dialog) dialog.close();
+            });
+            dialog.addEventListener('close', () => {
+                activeTrigger = null;
+                document.body.classList.remove('admin-modal-open');
+            });
+
+            @php
+                $failedEdit = old('edit_user_id') ? [
+                    'id' => (string) old('edit_user_id'),
+                    'values' => [
+                        'name' => old('name'),
+                        'email' => old('email'),
+                        'status' => old('status'),
+                        'role' => old('role'),
+                        'confirmSelfRoleChange' => old('confirm_self_role_change'),
+                    ],
+                    'errors' => $errors->all(),
+                ] : null;
+            @endphp
+            const failedEdit = @json($failedEdit);
+
+            if (failedEdit) {
+                const trigger = document.querySelector(`.edit-user-trigger[data-user-id="${failedEdit.id}"]`);
+                if (trigger) openEditModal(trigger, failedEdit.values, failedEdit.errors);
+            }
+        })();
+
+        (() => {
+            const dialog = document.getElementById('adminConfirmDialog');
+            const cancel = document.getElementById('cancelRoleChange');
+            const close = document.getElementById('closeRoleChange');
+            const confirm = document.getElementById('confirmAdminAction');
+            let pendingForm = null;
+
+            const actions = {
+                delete: {
+                    title: 'Delete User Permanently?',
+                    message: 'Permanently delete this user account?',
+                    note: 'This action cannot be undone.',
+                    confirmLabel: 'Delete User',
+                    tone: 'danger',
+                },
+                deactivate: {
+                    title: 'Deactivate User?',
+                    message: 'Deactivate this user account?',
+                    note: 'The user will no longer be able to sign in.',
+                    confirmLabel: 'Deactivate',
+                    tone: 'warning',
+                },
+                activate: {
+                    title: 'Confirm Activate User',
+                    message: 'Are you sure you want to activate this user?',
+                    note: '',
+                    confirmLabel: 'Activate',
+                    tone: 'success',
+                },
+                'reset-password': {
+                    title: 'Send Password Reset Link?',
+                    message: 'A secure password reset link will be sent to this email address.',
+                    note: '',
+                    confirmLabel: 'Send Reset Link',
+                    tone: 'primary',
+                },
+            };
+
+            const openDialog = (form, config, newRole = null) => {
+                pendingForm = form;
+                dialog.dataset.tone = config.tone;
+                document.getElementById('adminConfirmDialogTitle').textContent = config.title;
+                document.getElementById('adminConfirmDialogMessage').textContent = config.message;
+                const note = document.getElementById('adminConfirmDialogNote');
+                note.textContent = config.note;
+                note.hidden = !config.note;
+                document.getElementById('adminConfirmUser').textContent = form.dataset.userName;
+                document.getElementById('adminConfirmEmail').textContent = form.dataset.userEmail || '';
+                document.getElementById('adminConfirmRole').textContent = form.dataset.currentRole;
+                document.getElementById('adminConfirmEmailRow').hidden = !form.dataset.userEmail;
+                document.getElementById('adminConfirmRoleRow').hidden = newRole !== null;
+                document.getElementById('adminConfirmRoleChange').hidden = newRole === null;
+                document.getElementById('adminConfirmCurrentRole').textContent = form.dataset.currentRole;
+                document.getElementById('adminConfirmNewRole').textContent = newRole || '';
+                confirm.textContent = config.confirmLabel;
+                dialog.showModal();
+                document.body.classList.add('admin-modal-open');
+            };
+
+            document.querySelectorAll('.user-role-form').forEach((form) => {
+                form.addEventListener('submit', (event) => {
+                    event.preventDefault();
+                    const roleSelect = form.elements.namedItem('role');
+                    openDialog(form, {
+                        title: 'Change User Role?',
+                        message: "Confirm the role change below.",
+                        note: '',
+                        confirmLabel: 'Confirm Change',
+                        tone: 'primary',
+                    }, roleSelect.selectedOptions[0].textContent);
+                });
+            });
+
+            document.querySelectorAll('.user-confirm-form').forEach((form) => {
+                form.addEventListener('submit', (event) => {
+                    event.preventDefault();
+                    openDialog(form, actions[form.dataset.confirmAction]);
+                });
+            });
+
+            cancel.addEventListener('click', () => dialog.close());
+            close.addEventListener('click', () => dialog.close());
+            dialog.addEventListener('click', (event) => {
+                if (event.target === dialog) dialog.close();
+            });
+            confirm.addEventListener('click', () => {
+                const form = pendingForm;
+                dialog.close();
+                if (form) HTMLFormElement.prototype.submit.call(form);
+            });
+            dialog.addEventListener('close', () => {
+                pendingForm = null;
+                document.body.classList.remove('admin-modal-open');
+            });
+        })();
+    </script>
+@endpush

@@ -18,8 +18,8 @@
 
                 <div class="result-grid">
                     <div class="quiz-stat"><strong>{{ $attempt->score }} / {{ $attempt->total_points }}</strong><span>ពិន្ទុ</span></div>
-                    <div class="quiz-stat"><strong>{{ $attempt->correct_count }}</strong><span>ចម្លើយត្រឹមត្រូវ</span></div>
-                    <div class="quiz-stat"><strong>{{ $attempt->incorrect_count }}</strong><span>ចម្លើយមិនត្រឹមត្រូវ</span></div>
+                    <div class="quiz-stat correct-stat"><strong>{{ $attempt->correct_count }}</strong><span>ចម្លើយត្រឹមត្រូវ</span></div>
+                    <div class="quiz-stat incorrect-stat"><strong>{{ $attempt->incorrect_count }}</strong><span>ចម្លើយមិនត្រឹមត្រូវ</span></div>
                     <div class="quiz-stat"><strong>{{ $percentage }}%</strong><span>ភាគរយ</span></div>
                     <div class="quiz-stat"><strong>{{ ceil($attempt->time_used / 60) }} នាទី</strong><span>ពេលវេលាបានប្រើ</span></div>
                     <div class="quiz-stat"><strong>{{ $badge }}</strong><span>កម្រិតសមិទ្ធផល</span></div>
@@ -29,7 +29,6 @@
                     <a class="quiz-btn" href="{{ route('quiz.review', $attempt) }}">ពិនិត្យចម្លើយឡើងវិញ</a>
                     <form method="POST" action="{{ route('quiz.start', $attempt->quiz) }}">@csrf<button class="quiz-btn secondary" type="submit">ធ្វើតេស្តម្ដងទៀត</button></form>
                     <a class="quiz-btn secondary" href="{{ route('quiz.course', $attempt->quiz->programmingLanguage) }}">ត្រឡប់ទៅមេរៀន</a>
-                    <a class="quiz-btn secondary" href="{{ route('quiz.leaderboard', $attempt->quiz) }}">តារាងចំណាត់ថ្នាក់</a>
                     @if($percentage >= $attempt->quiz->passing_score)
                         <a class="quiz-btn secondary" href="{{ route('quiz.certificate', $attempt) }}">វិញ្ញាបនបត្រ</a>
                     @endif

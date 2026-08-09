@@ -2,10 +2,11 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Models\Course;
-use App\Models\Video;
 use App\Http\Controllers\Frontend\ContactController;
 use App\Http\Controllers\Frontend\CourseLearningController;
 use App\Http\Controllers\Frontend\QuizController as FrontendQuizController;
+use App\Http\Controllers\Frontend\VideoPlaylistController;
+use App\Http\Controllers\Frontend\GlobalSearchController;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\AdminManagementController;
 use App\Http\Controllers\Admin\CourseController;
@@ -18,7 +19,9 @@ use App\Http\Controllers\Admin\QuizCategoryController;
 use App\Http\Controllers\Admin\QuizQuestionController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Admin\VideoController;
+use App\Http\Controllers\Admin\VideoPlaylistController as AdminVideoPlaylistController;
 use App\Http\Controllers\Admin\ActivityLogController;
+use App\Http\Controllers\Admin\ReportController;
 use App\Http\Controllers\Admin\SystemSettingController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\Profile\ProfileController;
@@ -53,11 +56,9 @@ Route::get('/courses/{course:slug}/learn', [CourseLearningController::class, 'st
 Route::get('/courses/{course:slug}/lessons/{lesson:slug}', [CourseLearningController::class, 'showLesson'])
     ->name('courses.lessons.show');
 
-Route::get('/videos', function () {
-    $videos = Video::orderBy('id', 'asc')->get();
-
-    return view('frontend.videos', compact('videos'));
-})->name('videos');
+Route::get('/videos', [VideoPlaylistController::class, 'index'])->name('videos');
+Route::get('/videos/{playlist}', [VideoPlaylistController::class, 'playlist'])->name('videos.playlist');
+Route::get('/videos/{playlist}/{video}', [VideoPlaylistController::class, 'watch'])->name('videos.watch');
 
 Route::get('/test', [FrontendQuizController::class, 'index'])->name('test');
 Route::get('/quiz/{language}', [FrontendQuizController::class, 'language'])->name('quiz.course');
@@ -77,6 +78,7 @@ Route::get('/contact', [ContactController::class, 'index'])
     ->name('contact');
 
 Route::post('/contact/store', [ContactController::class, 'store'])
+    ->middleware(['auth', 'throttle:5,1'])
     ->name('contact.store');
 
 Route::middleware('guest')->group(function () {
@@ -112,6 +114,10 @@ Route::middleware('guest')->group(function () {
 });
 
 Route::middleware('auth')->group(function () {
+    Route::get('/search', GlobalSearchController::class)
+        ->middleware('throttle:30,1')
+        ->name('search');
+
     Route::get('/profile', [ProfileController::class, 'show'])
         ->name('profile.show');
 
@@ -146,12 +152,17 @@ Route::middleware(['auth', 'role:admin,super_admin'])
         Route::resource('lessons', LessonController::class);
         Route::resource('examples', LessonExampleController::class)->parameters(['examples' => 'example'])->except(['show']);
         Route::resource('videos', VideoController::class)->except(['show']);
+        Route::patch('videos/{video}/status', [VideoController::class, 'toggleStatus'])->name('videos.toggle-status');
+        Route::resource('video-playlists', AdminVideoPlaylistController::class)->except(['show']);
         Route::resource('programming-languages', ProgrammingLanguageController::class)->except(['show']);
         Route::resource('quiz-categories', QuizCategoryController::class)->except(['show']);
         Route::resource('quizzes', LmsQuizController::class)->except(['show']);
         Route::resource('quiz-questions', QuizQuestionController::class)->except(['show']);
 
         Route::redirect('tests', 'quizzes')->name('tests.index');
+
+        Route::get('/reports', [ReportController::class, 'index'])->name('reports.index');
+        Route::get('/reports/export', [ReportController::class, 'export'])->middleware('throttle:10,1')->name('reports.export');
     });
 
 Route::middleware(['auth', 'role:super_admin'])
@@ -164,6 +175,10 @@ Route::middleware(['auth', 'role:super_admin'])
 
         Route::patch('/users/{user}/role', [UserController::class, 'updateRole'])
             ->name('users.update-role');
+
+        Route::post('/users/{user}/password-reset', [UserController::class, 'sendPasswordReset'])
+            ->middleware('throttle:6,1')
+            ->name('users.password-reset');
 
         Route::get('/activity-logs', [ActivityLogController::class, 'index'])->name('activity-logs.index');
         Route::get('/activity-logs/{activityLog}', [ActivityLogController::class, 'show'])->name('activity-logs.show');

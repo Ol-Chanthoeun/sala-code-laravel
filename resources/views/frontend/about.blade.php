@@ -2,7 +2,6 @@
 
 @push('styles')
 <link rel="stylesheet" href="{{ asset('assets/css/about.css') }}">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 @endpush
 
 @section('content')
@@ -19,7 +18,7 @@
 
     <div class="container-grid">
         <div class="picture">
-            <img class="workteam-picture" src="{{ asset('assets/images/discussion.png') }}">
+            <img class="workteam-picture" src="{{ asset('assets/images/discussion.png') }}" alt="Sala Code team collaboration">
         </div>
 
         <div class="desrciption">
@@ -35,10 +34,10 @@
             <div class="text">
                 <p>គុណលក្ខណៈសំខាន់ៗរបស់ក្រុមយើង</p>
                 <ul>
-                    <li><span class="icon">🔄</span>ការសហការ : ធ្វើការជាមួយគ្នាដើម្បីសម្រេចគោលដៅ ។</li>
-                    <li><span class="icon">🎯</span>គោលដៅរួម : មានគោលដៅដូចគ្នា ។</li>
-                    <li><span class="icon">📋</span>ទំនួលខុសត្រូវ : ទទួលខុសត្រូវលើការងាររបស់ខ្លួន ។</li>
-                    <li><span class="icon">🤝</span>ការចែករំលែកចំណេះដឹង : ជួយគ្នារៀននិងអភិវឌ្ឍន៍ជំនាញ ។</li>
+                    <li><span class="team-value-icon"><i class="fa-solid fa-people-group" aria-hidden="true"></i></span><span class="team-value-text">ការសហការ : ធ្វើការជាមួយគ្នាដើម្បីសម្រេចគោលដៅ ។</span></li>
+                    <li><span class="team-value-icon"><i class="fa-solid fa-bullseye" aria-hidden="true"></i></span><span class="team-value-text">គោលដៅរួម : មានគោលដៅដូចគ្នា ។</span></li>
+                    <li><span class="team-value-icon"><i class="fa-solid fa-clipboard-list" aria-hidden="true"></i></span><span class="team-value-text">ទំនួលខុសត្រូវ : ទទួលខុសត្រូវលើការងាររបស់ខ្លួន ។</span></li>
+                    <li><span class="team-value-icon"><i class="fa-solid fa-handshake" aria-hidden="true"></i></span><span class="team-value-text">ការចែករំលែកចំណេះដឹង : ជួយគ្នារៀននិងអភិវឌ្ឍន៍ជំនាញ ។</span></li>
                 </ul>
             </div>
         </div>
@@ -69,21 +68,10 @@
                 @endforeach
 
                 <div class="icon">
-                    <a href="https://www.facebook.com/" target="_blank">
-                        <img src="{{ asset('assets/images/Facebook about.png') }}" alt="Facebook">
-                    </a>
-
-                    <a href="https://www.telegram.com/" target="_blank">
-                        <img class="telegram" src="{{ asset('assets/images/telegram about.png') }}" alt="Telegram">
-                    </a>
-
-                    <a href="https://www.youtube.com/" target="_blank">
-                        <img src="{{ asset('assets/images/youtube about.jpeg') }}" alt="Youtube">
-                    </a>
-
-                    <a href="https://www.tiktok.com/" target="_blank">
-                        <img src="{{ asset('assets/images/tiktok about02.png') }}" alt="Tiktok">
-                    </a>
+                    <a href="https://www.facebook.com/" target="_blank" rel="noopener noreferrer" aria-label="Facebook"><i class="fa-brands fa-facebook-f" aria-hidden="true"></i></a>
+                    <a href="https://www.telegram.com/" target="_blank" rel="noopener noreferrer" aria-label="Telegram"><i class="fa-brands fa-telegram" aria-hidden="true"></i></a>
+                    <a href="https://www.youtube.com/" target="_blank" rel="noopener noreferrer" aria-label="YouTube"><i class="fa-brands fa-youtube" aria-hidden="true"></i></a>
+                    <a href="https://www.tiktok.com/" target="_blank" rel="noopener noreferrer" aria-label="TikTok"><i class="fa-brands fa-tiktok" aria-hidden="true"></i></a>
                 </div>
 
                 <button class="Buttom">Read More</button>

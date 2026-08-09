@@ -7,6 +7,7 @@ use App\Http\Requests\Auth\LoginRequest;
 use App\Http\Requests\Auth\RegisterRequest;
 use App\Http\Requests\Auth\ResetPasswordRequest;
 use App\Models\User;
+use App\Services\ActivityLogService;
 use Illuminate\Auth\Events\PasswordReset;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
@@ -38,9 +39,9 @@ class AuthController extends Controller
         Auth::login($user);
 
         $request->session()->regenerate();
+        ActivityLogService::log($request,'User Created','Authentication',$user,'New email account registered.',[],['role'=>$user->role,'status'=>$user->status],$user);
 
-        return redirect()
-            ->route('profile.show')
+        return $this->redirectAfterAuthentication($request, $user)
             ->with('success', 'Welcome to Sala Code. Your account has been created.');
     }
 
@@ -51,6 +52,15 @@ class AuthController extends Controller
 
     public function login(LoginRequest $request): RedirectResponse
     {
+        $user = User::where('email', $request->validated('email'))->first();
+
+        if ($user && ! $user->isActive()) {
+            ActivityLogService::log($request,'Account Blocked','Security',$user,'Disabled account was denied email/password login.',[],[],null,'warning');
+            return back()->withErrors([
+                'email' => 'Your account has been disabled. Please contact support.',
+            ])->onlyInput('email');
+        }
+
         $credentials = [
             'email' => $request->validated('email'),
             'password' => $request->validated('password'),
@@ -63,17 +73,20 @@ class AuthController extends Controller
             $request->user()->forceFill([
                 'last_login_at' => now(),
             ])->save();
+            ActivityLogService::log($request,'Login Success','Authentication',$request->user(),'Email/password login succeeded.');
 
-            return redirect()->intended($this->redirectPath($request->user()));
+            return $this->redirectAfterAuthentication($request, $request->user());
         }
 
+        ActivityLogService::log($request,'Failed Login','Security',$request->validated('email'),'Email/password login failed.',[],[],null);
         return back()->withErrors([
-            'email' => 'The email or password is incorrect, or the account is inactive.',
+            'email' => 'The email or password is incorrect.',
         ])->onlyInput('email');
     }
 
     public function logout(Request $request): RedirectResponse
     {
+        ActivityLogService::log($request,'Logout','Authentication',$request->user(),'User logged out securely.');
         Auth::logout();
 
         $request->session()->invalidate();
@@ -89,7 +102,18 @@ class AuthController extends Controller
 
     public function sendResetLink(ForgotPasswordRequest $request): RedirectResponse
     {
+        $user = User::where('email', $request->validated('email'))->first();
+
+        if ($user?->usesGoogleAuthentication()) {
+            ActivityLogService::log($request,'Password Reset Requested','Authentication',$user,'Google account requested local password recovery; no reset link was issued.');
+            return back()->with('status', __(Password::RESET_LINK_SENT));
+        }
+
         $status = Password::sendResetLink($request->only('email'));
+
+        if ($status === Password::RESET_LINK_SENT) {
+            ActivityLogService::log($request,'Password Reset Requested','Authentication',$user ?: $request->validated('email'),'Secure password reset link requested.');
+        }
 
         return $status === Password::RESET_LINK_SENT
             ? back()->with('status', __($status))
@@ -106,6 +130,14 @@ class AuthController extends Controller
 
     public function resetPassword(ResetPasswordRequest $request): RedirectResponse
     {
+        $user = User::where('email', $request->validated('email'))->first();
+
+        if ($user?->usesGoogleAuthentication()) {
+            return back()->withErrors([
+                'email' => 'Google accounts must use Google account recovery.',
+            ])->onlyInput('email');
+        }
+
         $status = Password::reset(
             $request->only('email', 'password', 'password_confirmation', 'token'),
             function (User $user, string $password): void {
@@ -117,6 +149,10 @@ class AuthController extends Controller
                 event(new PasswordReset($user));
             }
         );
+
+        if ($status === Password::PASSWORD_RESET) {
+            ActivityLogService::log($request,'Password Changed','Authentication',$user,'Password changed using a secure reset token.');
+        }
 
         return $status === Password::PASSWORD_RESET
             ? redirect()->route('login')->with('success', __($status))
@@ -164,10 +200,11 @@ class AuthController extends Controller
             ?? User::where('email', $googleUser->getEmail())->first();
 
         if ($user && ! $user->isActive()) {
+            ActivityLogService::log($request,'Account Blocked','Security',$user,'Disabled account was denied Google OAuth login.',[],[],null,'warning');
             return redirect()
                 ->route('login')
                 ->withErrors([
-                    'google' => 'This account is inactive. Please contact an administrator.',
+                    'google' => 'Your account has been disabled. Please contact support.',
                 ]);
         }
 
@@ -193,8 +230,9 @@ class AuthController extends Controller
         Auth::login($user, remember: true);
 
         $request->session()->regenerate();
+        ActivityLogService::log($request,'Google Login','Authentication',$user,'Google OAuth login succeeded.');
 
-        return redirect()->intended($this->redirectPath($user));
+        return $this->redirectAfterAuthentication($request, $user);
     }
 
     private function googleCallbackUrl(): string
@@ -202,12 +240,14 @@ class AuthController extends Controller
         return route('google.callback');
     }
 
-    private function redirectPath(User $user): string
+    private function redirectAfterAuthentication(Request $request, User $user): RedirectResponse
     {
         if ($user->isAdmin() || $user->isSuperAdmin()) {
-            return route('admin.dashboard');
+            $request->session()->forget('url.intended');
+
+            return redirect()->route('admin.dashboard');
         }
 
-        return route('profile.show');
+        return redirect()->intended(route('home'));
     }
 }

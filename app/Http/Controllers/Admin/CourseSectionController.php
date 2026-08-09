@@ -15,7 +15,9 @@ class CourseSectionController extends Controller
     {
         $sections = CourseSection::with('course')->orderBy('course_id')->orderBy('order_number')->paginate(15);
 
-        return view('admin.sections.index', compact('sections'));
+        $courses = Course::orderBy('title')->get();
+
+        return view('admin.sections.index', compact('sections', 'courses'));
     }
 
     public function create(): View

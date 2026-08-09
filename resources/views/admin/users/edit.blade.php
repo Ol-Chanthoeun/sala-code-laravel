@@ -39,29 +39,5 @@
             </button>
         </form>
 
-        @if(auth()->user()->isSuperAdmin())
-            <form action="{{ route('admin.users.update-role', $managedUser) }}" method="POST" style="margin-top:25px;border-top:1px solid #eef2f6;padding-top:20px;">
-                @csrf
-                @method('PATCH')
-
-                <label>Role</label><br>
-                <select name="role" required style="width:100%;padding:12px;margin-top:8px;">
-                    <option value="user" @selected($managedUser->role === 'user')>User</option>
-                    <option value="admin" @selected($managedUser->role === 'admin')>Admin</option>
-                    <option value="super_admin" @selected($managedUser->role === 'super_admin')>Super Admin</option>
-                </select>
-
-                @if(auth()->id() === $managedUser->id && $managedUser->isSuperAdmin())
-                    <label style="display:block;margin-top:12px;">
-                        <input type="checkbox" name="confirm_self_role_change" value="1">
-                        I understand this may remove my own Super Admin access.
-                    </label>
-                @endif
-
-                <button type="submit" class="action-btn" style="margin-top:20px;border:none;cursor:pointer;" onclick="return confirm('Change this user role?')">
-                    Change Role
-                </button>
-            </form>
-        @endif
     </div>
 @endsection

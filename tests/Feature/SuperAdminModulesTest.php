@@ -94,7 +94,7 @@ class SuperAdminModulesTest extends TestCase
 
         $this->assertDatabaseHas('activity_logs', [
             'user_id' => $user->id,
-            'action' => 'Login',
+            'action' => 'Login Success',
             'module' => 'Authentication',
         ]);
     }
@@ -111,7 +111,7 @@ class SuperAdminModulesTest extends TestCase
             'description' => 'Updated a course.',
         ]);
 
-        $this->actingAs($superAdmin)->delete(route('admin.activity-logs.clear'))->assertRedirect();
+        $this->actingAs($superAdmin)->delete(route('admin.activity-logs.clear'), ['confirmation' => 'CLEAR'])->assertRedirect();
 
         $this->assertDatabaseCount('activity_logs', 0);
     }

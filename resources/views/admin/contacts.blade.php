@@ -58,9 +58,8 @@
 
                         <td>
 
-                            <form action="{{ route('admin.contacts.delete', $contact->id) }}"
-                                  method="POST"
-                                  onsubmit="return confirm('Delete this message?')">
+                            <form class="admin-destructive-form" action="{{ route('admin.contacts.delete', $contact->id) }}"
+                                  method="POST" data-confirm-title="Confirm Delete Contact Message" data-confirm-message="Are you sure you want to delete this contact message?" data-confirm-item="{{ $contact->name }} — {{ $contact->email }}" data-confirm-label="Delete Message">
 
                                 @csrf
                                 @method('DELETE')

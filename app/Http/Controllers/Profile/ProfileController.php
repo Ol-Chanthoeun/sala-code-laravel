@@ -10,6 +10,7 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
+use App\Services\ActivityLogService;
 use Throwable;
 
 class ProfileController extends Controller
@@ -27,6 +28,7 @@ class ProfileController extends Controller
         unset($data['remove_avatar']);
 
         $oldAvatar = $user->avatar;
+        $before = $user->only(['name','email','avatar']);
         $newAvatar = null;
 
         if ($request->hasFile('avatar')) {
@@ -55,6 +57,8 @@ class ProfileController extends Controller
             $this->deleteStoredAvatar($oldAvatar);
         }
 
+        ActivityLogService::log($request,'Update','Profile',$user,'Profile information updated.',$before,$user->only(['name','email','avatar']));
+
         return back()->with('success', 'Profile updated successfully.');
     }
 
@@ -63,6 +67,7 @@ class ProfileController extends Controller
         $request->user()->update([
             'password' => Hash::make($request->validated('password')),
         ]);
+        ActivityLogService::log($request,'Password Changed','Authentication',$request->user(),'Account password changed from the profile page.');
 
         return back()->with('success', 'Password changed successfully.');
     }

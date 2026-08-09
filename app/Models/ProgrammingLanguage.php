@@ -43,4 +43,9 @@ class ProgrammingLanguage extends Model
     {
         return $this->hasMany(Quiz::class)->orderBy('order_number');
     }
+
+    public function videos(): HasMany
+    {
+        return $this->hasMany(Video::class)->orderBy('order_number')->orderBy('id');
+    }
 }

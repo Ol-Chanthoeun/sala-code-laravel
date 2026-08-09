@@ -30,6 +30,11 @@
             padding: 24px;
         }
 
+        .course-detail-hero > .course-detail-panel {
+            position: sticky;
+            top: 88px;
+        }
+
         .course-detail-panel h1 {
             color: #0f172a;
             font-size: 34px;
@@ -106,6 +111,10 @@
         @media (max-width: 900px) {
             .course-detail-hero {
                 grid-template-columns: 1fr;
+            }
+
+            .course-detail-hero > .course-detail-panel {
+                position: static;
             }
         }
     </style>

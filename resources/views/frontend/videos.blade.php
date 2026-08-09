@@ -33,7 +33,7 @@
 
     <div class="search-wrap">
         <div class="search">
-            <span class="search-ic">🔍</span>
+            <span class="search-ic"><i class="fa-solid fa-magnifying-glass" aria-hidden="true"></i></span>
 
             <input
                 id="searchInput"
@@ -49,51 +49,31 @@
 
     <section class="cards">
 
-        @forelse($videos as $video)
+        @forelse($playlists as $playlist)
 
             <article class="card"
-                data-title="{{ strtolower($video->title) }}">
+                data-title="{{ strtolower($playlist->name) }}">
 
                 <div class="card-img">
 
-                    @if($video->thumbnail)
-                        <img
-                            src="{{ asset('uploads/videos/' . $video->thumbnail) }}"
-                            alt="{{ $video->title }}">
-                    @else
-                        <img
-                            src="{{ asset('assets/images/SalaCode-Logo.png') }}"
-                            alt="{{ $video->title }}">
-                    @endif
+                    <img src="{{ $playlist->display_thumbnail }}" alt="{{ $playlist->name }} playlist">
 
                     <div class="card-badge">
-                        Video
+                        <i class="fa-solid fa-list" aria-hidden="true"></i> Playlist
                     </div>
                 </div>
 
                 <div class="card-body">
 
-                    <h3>{{ $video->title }}</h3>
+                    <h3>{{ $playlist->name }}</h3>
+
+                    <div class="playlist-count"><i class="fa-solid fa-video" aria-hidden="true"></i> {{ $playlist->published_videos_count }} {{ Str::plural('Video', $playlist->published_videos_count) }}</div>
 
                     <p>
-                        {{ $video->description }}
+                        {{ $playlist->description }}
                     </p>
 
-                    @if($video->youtube_link)
-
-                        <a class="btn"
-                            href="{{ $video->youtube_link }}"
-                            target="_blank">
-                            មើលវីដេអូ
-                        </a>
-
-                    @else
-
-                        <a class="btn" href="#">
-                            មិនទាន់មាន Link
-                        </a>
-
-                    @endif
+                    <a class="btn" href="{{ route('videos.playlist', $playlist->slug) }}"><i class="fa-solid fa-circle-play" aria-hidden="true"></i> មើលមេរៀន</a>
 
                 </div>
 

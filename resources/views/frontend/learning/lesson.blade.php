@@ -6,7 +6,7 @@
         .learning-page {
             background: #f8fbff;
             min-height: 100vh;
-            overflow-x: hidden;
+            overflow-x: clip;
             padding: 96px 0 0;
         }
 
@@ -17,13 +17,48 @@
         }
 
         .learning-sidebar {
+            align-self: start;
             background: #ffffff;
             border-right: 1px solid #dbe4f0;
             padding: 24px;
             position: sticky;
-            top: 72px;
-            height: calc(100vh - 72px);
+            top: 96px;
+            height: calc(100vh - 96px);
             overflow-y: auto;
+        }
+
+        .back-to-top {
+            align-items: center;
+            background: #1f6fe5;
+            border: 0;
+            border-radius: 50%;
+            bottom: 24px;
+            box-shadow: 0 4px 14px rgba(15, 23, 42, 0.2);
+            color: #ffffff;
+            cursor: pointer;
+            display: flex;
+            font-size: 20px;
+            height: 42px;
+            justify-content: center;
+            opacity: 0;
+            pointer-events: none;
+            position: fixed;
+            right: 24px;
+            transition: opacity .2s ease, transform .2s ease, background .2s ease;
+            transform: translateY(8px);
+            width: 42px;
+            z-index: 900;
+        }
+
+        .back-to-top.is-visible {
+            opacity: 1;
+            pointer-events: auto;
+            transform: translateY(0);
+        }
+
+        .back-to-top:hover {
+            background: #1f4fc4;
+            transform: translateY(-2px);
         }
 
         .learning-sidebar h2 {
@@ -436,6 +471,8 @@
             </section>
         </div>
     </main>
+
+    <button class="back-to-top" id="backToTop" type="button" aria-label="Back to top">&uarr;</button>
 @endsection
 
 @push('scripts')
@@ -446,6 +483,15 @@
             const close = document.getElementById('lessonSidebarClose');
             const sidebar = document.getElementById('lessonSidebar');
             const backdrop = document.getElementById('lessonSidebarBackdrop');
+            const backToTop = document.getElementById('backToTop');
+
+            if (backToTop) {
+                const updateBackToTop = () => backToTop.classList.toggle('is-visible', window.scrollY > 300);
+                window.addEventListener('scroll', updateBackToTop, { passive: true });
+                backToTop.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
+                updateBackToTop();
+            }
+
             if (!toggle || !close || !sidebar || !backdrop) return;
 
             const setOpen = (open) => {
