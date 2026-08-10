@@ -8,6 +8,8 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 
 class User extends Authenticatable
 {
@@ -95,6 +97,32 @@ class User extends Authenticatable
     public function isProtectedPrimarySuperAdmin(): bool
     {
         return $this->isSuperAdmin() && strcasecmp($this->email, self::PRIMARY_SUPER_ADMIN_EMAIL) === 0;
+    }
+
+    /**
+     * Resolve the current avatar without emitting broken or duplicated storage URLs.
+     */
+    public function getAvatarUrlAttribute(): string
+    {
+        $avatar = trim((string) $this->avatar);
+
+        if (Str::startsWith($avatar, ['https://', 'http://'])) {
+            return $avatar;
+        }
+
+        $path = ltrim($avatar, '/');
+        $path = Str::startsWith($path, 'storage/') ? Str::after($path, 'storage/') : $path;
+
+        if ($path !== '' && Storage::disk('public')->exists($path)) {
+            return Storage::disk('public')->url($path);
+        }
+
+        return $this->default_avatar_url;
+    }
+
+    public function getDefaultAvatarUrlAttribute(): string
+    {
+        return asset('assets/images/personal-information.png');
     }
 
     public function courses(): HasMany

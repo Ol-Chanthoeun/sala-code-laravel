@@ -52,11 +52,6 @@
             @else
                 @php
                     $navbarUser = auth()->user();
-                    $navbarAvatar = $navbarUser->avatar;
-                    $navbarAvatarUrl = $navbarAvatar
-                        ? (Str::startsWith($navbarAvatar, ['http://', 'https://']) ? $navbarAvatar : Storage::url($navbarAvatar))
-                        : null;
-                    $navbarInitials = Str::upper(Str::substr($navbarUser->name, 0, 2));
                     $navbarRole = Str::headline($navbarUser->role);
                 @endphp
 
@@ -78,11 +73,7 @@
                 <div class="navbar-user-menu navbar-popover">
                     <button class="navbar-user-trigger navbar-popover-trigger" type="button" aria-label="Open account menu for {{ $navbarUser->name }}" aria-expanded="false" aria-controls="accountDropdown">
                         <span class="navbar-avatar" aria-hidden="true">
-                            @if($navbarAvatarUrl)
-                                <img src="{{ $navbarAvatarUrl }}" alt="">
-                            @else
-                                {{ $navbarInitials }}
-                            @endif
+                            <img src="{{ $navbarUser->avatar_url }}" alt="" onerror="this.onerror=null;this.src='{{ $navbarUser->default_avatar_url }}';">
                         </span>
                         <span class="navbar-mobile-row-label">{{ $navbarUser->name }}</span>
                         <i class="fa-solid fa-chevron-down navbar-user-trigger__chevron" aria-hidden="true"></i>
