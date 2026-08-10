@@ -2,11 +2,6 @@
 
 @php
     $profileUser = auth()->user();
-    $profileAvatar = $profileUser->avatar;
-    $profileAvatarUrl = $profileAvatar
-        ? (Str::startsWith($profileAvatar, ['http://', 'https://']) ? $profileAvatar : Storage::url($profileAvatar))
-        : null;
-    $profileInitials = Str::upper(Str::substr($profileUser->name, 0, 2));
     $displayName = preg_match("/^[\p{Latin}\s'’-]+$/u", $profileUser->name)
         ? Str::title(Str::lower($profileUser->name))
         : $profileUser->name;
@@ -187,19 +182,14 @@
                         <label for="avatar">Profile photo</label>
                         <div class="profile-photo-row">
                             <div id="profilePhotoPreview" class="profile-photo-preview">
-                                <span id="profilePhotoInitials" @if($profileAvatarUrl) hidden @endif>{{ $profileInitials }}</span>
-                                @if($profileAvatarUrl)
-                                    <img id="profilePhotoImage" src="{{ $profileAvatarUrl }}" alt="Current profile photo" onerror="this.hidden=true;document.getElementById('profilePhotoInitials').hidden=false;">
-                                @else
-                                    <img id="profilePhotoImage" src="" alt="Profile photo preview" hidden>
-                                @endif
+                                <img id="profilePhotoImage" src="{{ $profileUser->avatar_url }}" alt="Current profile photo" onerror="this.onerror=null;this.src='{{ $profileUser->default_avatar_url }}';">
                                 <button id="avatarEditButton" class="profile-photo-edit" type="button" aria-label="Change profile photo"><i class="fa-solid fa-camera" aria-hidden="true"></i></button>
                             </div>
                             <div class="profile-photo-controls">
                                 <input id="avatar" type="file" name="avatar" accept=".png,.jpg,.jpeg,.webp,image/png,image/jpeg,image/webp" hidden>
                                 <input id="removeAvatarInput" type="hidden" name="remove_avatar" value="0">
                                 <button id="chooseAvatar" class="profile-photo-button" type="button">Change Photo</button>
-                                <button id="removeAvatar" class="profile-photo-button remove" type="button" @if(! $profileAvatarUrl) hidden @endif>Remove</button>
+                                <button id="removeAvatar" class="profile-photo-button remove" type="button" @if(! $profileUser->avatar) hidden @endif>Remove</button>
                                 <small id="avatarFileName">PNG, JPG, JPEG or WEBP · Max 2 MB</small>
                                 <small id="avatarError" class="profile-photo-error">@error('avatar'){{ $message }}@enderror</small>
                             </div>
@@ -266,7 +256,7 @@
             const editButton = document.getElementById('avatarEditButton');
             const removeButton = document.getElementById('removeAvatar');
             const image = document.getElementById('profilePhotoImage');
-            const initials = document.getElementById('profilePhotoInitials');
+            const defaultAvatarUrl = @json($profileUser->default_avatar_url);
             const fileName = document.getElementById('avatarFileName');
             const error = document.getElementById('avatarError');
             const allowedExtensions = ['png', 'jpg', 'jpeg', 'webp'];
@@ -293,7 +283,6 @@
                 previewUrl = URL.createObjectURL(file);
                 image.src = previewUrl;
                 image.hidden = false;
-                initials.hidden = true;
                 fileName.textContent = file.name;
                 error.textContent = '';
                 removeButton.hidden = false;
@@ -305,9 +294,8 @@
             removeButton.addEventListener('click', () => {
                 input.value = '';
                 removeInput.value = '1';
-                image.hidden = true;
-                image.removeAttribute('src');
-                initials.hidden = false;
+                image.hidden = false;
+                image.src = defaultAvatarUrl;
                 fileName.textContent = 'Photo will be removed after saving.';
                 error.textContent = '';
                 removeButton.hidden = true;

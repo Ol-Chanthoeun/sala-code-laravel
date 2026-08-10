@@ -698,16 +698,17 @@ nav a i {
   border-radius: 50%;
   color: #1d4ed8;
   display: inline-flex;
-  flex: 0 0 32px;
+  aspect-ratio: 1 / 1;
+  flex: 0 0 36px;
   font-size: 11px;
   font-weight: 800;
-  height: 32px;
+  height: 36px;
   justify-content: center;
   overflow: hidden;
-  width: 32px;
+  width: 36px;
 }
 
-.navbar-avatar img { height: 100%; object-fit: cover; width: 100%; }
+.navbar-avatar img { aspect-ratio:1 / 1;border-radius:50%;height:100%;object-fit:cover;width:100%; }
 .navbar-user-trigger__chevron { font-size: 10px; transition: transform .2s ease; }
 .navbar-user-trigger[aria-expanded="true"] .navbar-user-trigger__chevron { transform: rotate(180deg); }
 

@@ -9,7 +9,7 @@
         font-family: 'Inter', sans-serif;
         position: relative;
         isolation: isolate;
-        overflow: hidden;
+        overflow: clip;
         background:
             radial-gradient(circle at 12% 18%, rgba(56, 189, 248, 0.24) 0, rgba(56, 189, 248, 0) 28%),
             radial-gradient(circle at 86% 12%, rgba(124, 58, 237, 0.26) 0, rgba(124, 58, 237, 0) 30%),
@@ -85,12 +85,14 @@
         gap: 0;
         background: #fff;
         border-radius: 22px;
-        overflow: hidden;
+        overflow: visible;
         box-shadow: 0 20px 60px rgba(0,0,0,0.18);
     }
 
     .contact-info {
         background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border-radius: 22px 0 0 22px;
+        min-width: 0;
         padding: 45px 35px;
         color: #fff;
     }
@@ -107,8 +109,9 @@
     .info-item {
         display: flex;
         gap: 15px;
-        align-items: center;
-        margin-top: 25px;
+        align-items: flex-start;
+        margin-top: 26px;
+        min-width: 0;
     }
 
     .info-icon {
@@ -119,7 +122,35 @@
         display: flex;
         align-items: center;
         justify-content: center;
+        flex: 0 0 50px;
         font-size: 22px;
+    }
+
+    .info-item > div:last-child {
+        min-width: 0;
+        padding-top: 2px;
+    }
+
+    .info-item h4 {
+        font-size: 16px;
+        line-height: 1.35;
+        margin: 0 0 4px;
+    }
+
+    .info-item p {
+        margin: 0;
+        overflow-wrap: anywhere;
+        word-break: break-word;
+    }
+
+    .info-item a {
+        color: #fff;
+        text-decoration: none;
+    }
+
+    .info-item a:hover,
+    .info-item a:focus-visible {
+        text-decoration: underline;
     }
 
     .social-links {
@@ -138,10 +169,19 @@
         align-items: center;
         justify-content: center;
         text-decoration: none;
+        transition: background-color .2s ease, transform .2s ease;
+    }
+
+    .social-links a:hover,
+    .social-links a:focus-visible {
+        background: rgba(255,255,255,0.32);
+        transform: translateY(-2px);
     }
 
     .contact-form-side {
-        padding: 45px 35px;
+        border-radius: 0 22px 22px 0;
+        min-width: 0;
+        padding: 45px 35px 32px;
     }
 
     .form-title {
@@ -155,7 +195,7 @@
     }
 
     .form-group {
-        margin-bottom: 20px;
+        margin-bottom: 18px;
     }
 
     .form-group label {
@@ -171,12 +211,22 @@
 
     .form-group input,
     .form-group textarea {
+        background: #fff;
         width: 100%;
         padding: 14px 16px;
         border: 2px solid #e2e8f0;
         border-radius: 14px;
         font-size: 16px;
         font-family: 'Inter', sans-serif;
+        line-height: 1.5;
+        outline: none;
+        transition: border-color .2s ease, box-shadow .2s ease;
+    }
+
+    .form-group input:focus,
+    .form-group textarea:focus {
+        border-color: #667eea;
+        box-shadow: 0 0 0 3px rgba(102,126,234,.14);
     }
 
     .form-group textarea {
@@ -192,8 +242,13 @@
     }
 
     .btn-submit {
+        align-items: center;
+        display: inline-flex;
+        gap: 9px;
+        justify-content: center;
         width: 100%;
-        padding: 15px;
+        min-height: 52px;
+        padding: 13px 18px;
         border: none;
         border-radius: 14px;
         background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
@@ -201,6 +256,41 @@
         font-size: 17px;
         font-weight: 700;
         cursor: pointer;
+        margin: 18px 0 8px;
+        transition: box-shadow .2s ease, transform .2s ease;
+    }
+
+    .btn-submit:hover,
+    .btn-submit:focus-visible {
+        box-shadow: 0 8px 20px rgba(102,126,234,.3);
+        transform: translateY(-1px);
+    }
+
+    .contact-form {
+        overflow: visible;
+        padding-bottom: 24px;
+    }
+
+    .login-required {
+        align-items: flex-start;
+        background: #f5f3ff;
+        border: 1px solid #ddd6fe;
+        border-radius: 12px;
+        color: #4c1d95;
+        display: flex;
+        gap: 10px;
+        line-height: 1.5;
+        margin-top: 18px;
+        padding: 14px;
+    }
+
+    .login-required i {
+        margin-top: 4px;
+    }
+
+    .login-required a {
+        color: #4f46e5;
+        font-weight: 700;
     }
 
     .alert-success {
@@ -232,6 +322,7 @@
     }
 
     .map-container iframe {
+        display: block;
         width: 100%;
         height: 100%;
         border: none;
@@ -242,9 +333,34 @@
             grid-template-columns: 1fr;
         }
 
+        .contact-page {
+            padding: 48px 18px;
+        }
+
+        .contact-info {
+            border-radius: 22px 22px 0 0;
+        }
+
+        .contact-form-side {
+            border-radius: 0 0 22px 22px;
+            padding: 34px 24px 28px;
+        }
+
+        .map-container {
+            height: 280px;
+        }
+
         .contact-header h1 {
             font-size: 32px;
         }
+    }
+
+    @media (max-width: 480px) {
+        .contact-page { padding-left: 12px; padding-right: 12px; }
+        .contact-info { padding: 34px 22px; }
+        .contact-form-side { padding-left: 20px; padding-right: 20px; }
+        .social-links { flex-wrap: wrap; }
+        .map-container { height: 260px; }
     }
 </style>
 @endpush
@@ -284,7 +400,7 @@
                     </div>
                     <div>
                         <h4>Call Us</h4>
-                        <p>{{ $systemSettings['contact_phone'] ?: '+855 12 345 678' }}</p>
+                        <p><a href="tel:+855962796742">+855 96 279 6742</a></p>
                     </div>
                 </div>
 
@@ -294,15 +410,15 @@
                     </div>
                     <div>
                         <h4>Email Us</h4>
-                        <p>{{ $systemSettings['contact_email'] ?: 'info@sala-code.com' }}</p>
+                        <p><a href="mailto:olchanthoeun007@gmail.com">olchanthoeun007@gmail.com</a></p>
                     </div>
                 </div>
 
                 <div class="social-links">
-                    <a href="{{ $systemSettings['facebook_url'] ?: '#' }}"><i class="fab fa-facebook-f"></i></a>
-                    <a href="{{ $systemSettings['telegram_url'] ?: '#' }}"><i class="fab fa-telegram"></i></a>
-                    <a href="{{ $systemSettings['youtube_url'] ?: '#' }}"><i class="fab fa-youtube"></i></a>
-                    <a href="{{ $systemSettings['github_url'] ?: '#' }}"><i class="fab fa-github"></i></a>
+                    <a href="{{ $systemSettings['facebook_url'] ?: '#' }}" aria-label="Facebook"><i class="fab fa-facebook-f" aria-hidden="true"></i></a>
+                    <a href="{{ $systemSettings['telegram_url'] ?: '#' }}" aria-label="Telegram"><i class="fab fa-telegram" aria-hidden="true"></i></a>
+                    <a href="{{ $systemSettings['youtube_url'] ?: '#' }}" aria-label="YouTube"><i class="fab fa-youtube" aria-hidden="true"></i></a>
+                    <a href="{{ $systemSettings['github_url'] ?: '#' }}" aria-label="GitHub"><i class="fab fa-github" aria-hidden="true"></i></a>
                 </div>
             </div>
 
@@ -325,30 +441,30 @@
                     </div>
                 @endif
 
-                <form action="{{ route('contact.store') }}" method="POST">
+                <form class="contact-form" action="{{ route('contact.store') }}" method="POST">
                     @csrf
 
                     <div class="form-group">
-                        <label>
+                        <label for="contact-name">
                             <i class="fas fa-user"></i> Full Name
                         </label>
-                        <input type="text" name="name" value="{{ old('name', auth()->user()?->name) }}" minlength="2" maxlength="100" required @auth readonly @endauth>
+                        <input id="contact-name" type="text" name="name" value="{{ old('name', auth()->user()?->name) }}" minlength="2" maxlength="100" autocomplete="name" required @auth readonly @endauth>
                         @error('name')<span class="field-error">{{ $message }}</span>@enderror
                     </div>
 
                     <div class="form-group">
-                        <label>
+                        <label for="contact-email">
                             <i class="fas fa-envelope"></i> Email Address
                         </label>
-                        <input type="email" name="email" value="{{ old('email', auth()->user()?->email) }}" maxlength="255" required @auth readonly @endauth>
+                        <input id="contact-email" type="email" name="email" value="{{ old('email', auth()->user()?->email) }}" maxlength="255" autocomplete="email" required @auth readonly @endauth>
                         @error('email')<span class="field-error">{{ $message }}</span>@enderror
                     </div>
 
                     <div class="form-group">
-                        <label>
+                        <label for="contact-message">
                             <i class="fas fa-comment"></i> Message
                         </label>
-                        <textarea name="message" minlength="10" maxlength="1000" required>{{ old('message') }}</textarea>
+                        <textarea id="contact-message" name="message" minlength="10" maxlength="1000" required>{{ old('message') }}</textarea>
                         @error('message')<span class="field-error">{{ $message }}</span>@enderror
                     </div>
 
@@ -358,10 +474,7 @@
                             Send Message
                         </button>
                     @else
-                        <button type="button" class="btn-submit" onclick="window.location.href='{{ route('login') }}'">
-                            <i class="fas fa-paper-plane"></i>
-                            Send Message
-                        </button>
+                        <div class="login-required" role="status"><i class="fas fa-lock" aria-hidden="true"></i><div>Please log in before sending a message. <a href="{{ route('login') }}">Login</a></div></div>
                     @endauth
                 </form>
             </div>
@@ -371,7 +484,8 @@
         <div class="map-section">
             <div class="map-container">
                 <iframe 
-                    src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3909.014719965848!2d104.892396!3d11.556374!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x310951add5e2cd81%3A0x171e0b69c7c6f7ba!2sPhnom%20Penh!5e0!3m2!1sen!2skh!4v1699999999999!5m2!1sen!2skh" 
+                    src="https://www.google.com/maps?q=Passerelles%20Num%C3%A9riques%20Cambodia%2C%20Street%20371%2C%20Phnom%20Penh&z=15&output=embed"
+                    title="Passerelles Numériques Cambodia location"
                     allowfullscreen="" 
                     loading="lazy">
                 </iframe>

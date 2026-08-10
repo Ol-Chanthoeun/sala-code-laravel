@@ -4,9 +4,52 @@
 @section('page-title', 'User Management')
 @section('breadcrumb', 'Users')
 
+@push('styles')
+    <style>
+        .users-back-to-top {
+            align-items: center;
+            background: linear-gradient(135deg, #4f46e5, #2563eb);
+            border: 0;
+            border-radius: 50%;
+            bottom: 28px;
+            box-shadow: 0 8px 22px rgba(49, 46, 129, .24);
+            color: #fff;
+            cursor: pointer;
+            display: flex;
+            height: 40px;
+            justify-content: center;
+            opacity: 0;
+            pointer-events: none;
+            position: fixed;
+            right: 28px;
+            transform: translateY(8px);
+            transition: bottom .2s ease, opacity .2s ease, transform .2s ease, visibility .2s ease;
+            visibility: hidden;
+            width: 40px;
+            z-index: 120;
+        }
+
+        .users-back-to-top.is-visible {
+            opacity: 1;
+            pointer-events: auto;
+            transform: translateY(0);
+            visibility: visible;
+        }
+
+        .users-back-to-top.is-near-pagination { bottom: 88px; }
+        .users-back-to-top:hover,
+        .users-back-to-top:focus-visible { background: linear-gradient(135deg, #4338ca, #1d4ed8); }
+
+        @media (max-width: 768px) {
+            .users-back-to-top { bottom: 18px; height: 36px; right: 16px; width: 36px; }
+            .users-back-to-top.is-near-pagination { bottom: 76px; }
+        }
+    </style>
+@endpush
+
 @section('content')
     @if(auth()->user()->isSuperAdmin())
-        <div class="users-create-admin-sticky">
+        <div class="users-create-admin-action">
             <a href="{{ route('admin.admins.create') }}"
                class="action-btn admin-primary-action admin-modal-form-link"
                data-modal-title="Create Admin"
@@ -23,7 +66,7 @@
         <p style="color:#dc2626;margin-bottom:15px;">{{ $errors->first() }}</p>
     @endif
 
-    <div class="system-info admin-sticky-toolbar users-filter-toolbar" style="margin-bottom:20px;">
+    <div class="system-info users-filter-toolbar" style="margin-bottom:20px;">
         <form method="GET" action="{{ route('admin.users.index') }}" style="display:grid;grid-template-columns:2fr 1fr auto;gap:12px;align-items:end;">
             <p>
                 <label>Search users</label><br>
@@ -133,9 +176,13 @@
         </div>
     </div>
 
-    <div style="margin-top:20px;">
+    <div class="users-pagination" style="margin-top:20px;">
         {{ $users->links('admin.partials.pagination') }}
     </div>
+
+    <button class="users-back-to-top" id="usersBackToTop" type="button" title="Back to Top" aria-label="Back to Top">
+        <i class="fas fa-arrow-up" aria-hidden="true"></i>
+    </button>
 
     <dialog class="admin-confirm-dialog edit-user-dialog" id="editUserDialog" aria-labelledby="editUserDialogTitle">
         <div class="admin-confirm-dialog__panel edit-user-dialog__panel">
@@ -225,6 +272,22 @@
 
 @push('scripts')
     <script>
+        (() => {
+            const button = document.getElementById('usersBackToTop');
+            const pagination = document.querySelector('.users-pagination');
+            const updateVisibility = () => button.classList.toggle('is-visible', window.scrollY >= 450);
+
+            window.addEventListener('scroll', updateVisibility, { passive: true });
+            button.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
+            updateVisibility();
+
+            if (pagination && 'IntersectionObserver' in window) {
+                new IntersectionObserver(([entry]) => {
+                    button.classList.toggle('is-near-pagination', entry.isIntersecting);
+                }, { threshold: 0 }).observe(pagination);
+            }
+        })();
+
         (() => {
             const menus = document.querySelectorAll('.user-more-actions');
 

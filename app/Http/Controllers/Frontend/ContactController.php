@@ -35,6 +35,6 @@ class ContactController extends Controller
 
         return redirect()
             ->back()
-            ->with('success', 'Message sent successfully!');
+            ->with('success', 'Your message has been sent successfully.');
     }
 }

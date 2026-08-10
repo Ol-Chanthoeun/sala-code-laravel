@@ -17,7 +17,7 @@
     <style>
         :root { --system-primary: {{ $systemSettings['primary_color'] ?? '#1f6fe5' }}; --system-secondary: {{ $systemSettings['secondary_color'] ?? '#4f46e5' }}; }
         .action-btn { background: var(--system-secondary); }
-        .sidebar-nav ul li:hover a, .sidebar-nav ul li.active a { border-left-color: var(--system-secondary); }
+        .sidebar-link:hover, .sidebar-link.active, .sidebar-group-toggle:hover, .sidebar-group.is-active > .sidebar-group-toggle { border-left-color: var(--system-secondary); }
     </style>
 
     @stack('styles')
@@ -43,144 +43,89 @@
                     $isSuperAdmin = $currentUser?->role === 'super_admin';
                 @endphp
 
-                <ul>
-                    <li class="{{ request()->routeIs('admin.dashboard') ? 'active' : '' }}">
-                        <a href="{{ route('admin.dashboard') }}">
-                            <i class="fas fa-home"></i>
-                            <span>Dashboard</span>
-                        </a>
-                    </li>
+                <div class="sidebar-section">
+                    <p class="sidebar-section-label">Main</p>
+                    <a class="sidebar-link {{ request()->routeIs('admin.dashboard') ? 'active' : '' }}" href="{{ route('admin.dashboard') }}"><i class="fas fa-house"></i><span>Dashboard</span></a>
+                </div>
 
-                    @if($canManageContent)
-                        <li class="{{ request()->routeIs('admin.users.*') ? 'active' : '' }}">
-                            <a href="{{ route('admin.users.index') }}">
-                                <i class="fas fa-users"></i>
-                                <span>Manage Users</span>
-                            </a>
-                        </li>
+                @if($canManageContent)
+                    @php
+                        $usersOpen = request()->routeIs('admin.users.*') || request()->routeIs('admin.admins.*');
+                    @endphp
+                    <div class="sidebar-section">
+                        <p class="sidebar-section-label">User Management</p>
+                        <div class="sidebar-group {{ $usersOpen ? 'is-active is-open' : '' }}">
+                            <button class="sidebar-group-toggle" type="button" aria-expanded="{{ $usersOpen ? 'true' : 'false' }}"><i class="fas fa-users"></i><span>Users</span><i class="fas fa-chevron-down sidebar-chevron"></i></button>
+                            <div class="sidebar-submenu"><ul>
+                                <li><a class="{{ request()->routeIs('admin.users.*') ? 'active' : '' }}" href="{{ route('admin.users.index') }}">Manage Users</a></li>
+                                @if($isSuperAdmin)
+                                    <li><a class="{{ request()->routeIs('admin.admins.*') ? 'active' : '' }}" href="{{ route('admin.admins.index') }}">Admin Management</a></li>
+                                @endif
+                            </ul></div>
+                        </div>
+                    </div>
 
-                        @if($isSuperAdmin)
-                            <li class="{{ request()->routeIs('admin.admins.*') ? 'active' : '' }}">
-                                <a href="{{ route('admin.admins.index') }}">
-                                    <i class="fas fa-user-shield"></i>
-                                    <span>Admin Management</span>
-                                </a>
-                            </li>
-                        @endif
+                    @php
+                        $coursesOpen = request()->routeIs('admin.courses.*') || request()->routeIs('admin.sections.*') || request()->routeIs('admin.lessons.*') || request()->routeIs('admin.examples.*');
+                        $mediaOpen = request()->routeIs('admin.videos.*') || request()->routeIs('admin.video-playlists.*');
+                    @endphp
+                    <div class="sidebar-section">
+                        <p class="sidebar-section-label">Content Management</p>
+                        <div class="sidebar-group {{ $coursesOpen ? 'is-active is-open' : '' }}">
+                            <button class="sidebar-group-toggle" type="button" aria-expanded="{{ $coursesOpen ? 'true' : 'false' }}"><i class="fas fa-book-open"></i><span>Course Management</span><i class="fas fa-chevron-down sidebar-chevron"></i></button>
+                            <div class="sidebar-submenu"><ul>
+                                <li><a class="{{ request()->routeIs('admin.courses.*') ? 'active' : '' }}" href="{{ route('admin.courses.index') }}">Courses</a></li>
+                                <li><a class="{{ request()->routeIs('admin.sections.*') ? 'active' : '' }}" href="{{ route('admin.sections.index') }}">Course Sections</a></li>
+                                <li><a class="{{ request()->routeIs('admin.lessons.*') ? 'active' : '' }}" href="{{ route('admin.lessons.index') }}">Lessons</a></li>
+                                <li><a class="{{ request()->routeIs('admin.examples.*') ? 'active' : '' }}" href="{{ route('admin.examples.index') }}">Code Examples</a></li>
+                            </ul></div>
+                        </div>
+                        <div class="sidebar-group {{ $mediaOpen ? 'is-active is-open' : '' }}">
+                            <button class="sidebar-group-toggle" type="button" aria-expanded="{{ $mediaOpen ? 'true' : 'false' }}"><i class="fas fa-photo-film"></i><span>Media Library</span><i class="fas fa-chevron-down sidebar-chevron"></i></button>
+                            <div class="sidebar-submenu"><ul>
+                                <li><a class="{{ request()->routeIs('admin.videos.*') ? 'active' : '' }}" href="{{ route('admin.videos.index') }}">Videos</a></li>
+                                <li><a class="{{ request()->routeIs('admin.video-playlists.*') ? 'active' : '' }}" href="{{ route('admin.video-playlists.index') }}">Video Playlists</a></li>
+                            </ul></div>
+                        </div>
+                    </div>
 
-                        <li class="{{ request()->routeIs('admin.courses.*') ? 'active' : '' }}">
-                            <a href="{{ route('admin.courses.index') }}">
-                                <i class="fas fa-book"></i>
-                                <span>Courses</span>
-                            </a>
-                        </li>
+                    @php
+                        $quizzesOpen = request()->routeIs('admin.quizzes.*') || request()->routeIs('admin.tests.*') || request()->routeIs('admin.quiz-questions.*') || request()->routeIs('admin.quiz-categories.*') || request()->routeIs('admin.programming-languages.*');
+                    @endphp
+                    <div class="sidebar-section">
+                        <p class="sidebar-section-label">Assessment</p>
+                        <div class="sidebar-group {{ $quizzesOpen ? 'is-active is-open' : '' }}">
+                            <button class="sidebar-group-toggle" type="button" aria-expanded="{{ $quizzesOpen ? 'true' : 'false' }}"><i class="fas fa-list-check"></i><span>Quizzes</span><i class="fas fa-chevron-down sidebar-chevron"></i></button>
+                            <div class="sidebar-submenu"><ul>
+                                <li><a class="{{ request()->routeIs('admin.quizzes.*') || request()->routeIs('admin.tests.*') ? 'active' : '' }}" href="{{ route('admin.quizzes.index') }}">All Quizzes</a></li>
+                                <li><a class="{{ request()->routeIs('admin.quiz-questions.*') ? 'active' : '' }}" href="{{ route('admin.quiz-questions.index') }}">Quiz Questions</a></li>
+                                <li><a class="{{ request()->routeIs('admin.quiz-categories.*') ? 'active' : '' }}" href="{{ route('admin.quiz-categories.index') }}">Quiz Categories</a></li>
+                                <li><a class="{{ request()->routeIs('admin.programming-languages.*') ? 'active' : '' }}" href="{{ route('admin.programming-languages.index') }}">Quiz Languages</a></li>
+                            </ul></div>
+                        </div>
+                    </div>
 
-                        <li class="{{ request()->routeIs('admin.sections.*') ? 'active' : '' }}">
-                            <a href="{{ route('admin.sections.index') }}">
-                                <i class="fas fa-layer-group"></i>
-                                <span>Course Sections</span>
-                            </a>
-                        </li>
+                    <div class="sidebar-section">
+                        <p class="sidebar-section-label">Communication</p>
+                        <a class="sidebar-link {{ request()->routeIs('admin.contacts') ? 'active' : '' }}" href="{{ route('admin.contacts') }}"><i class="fas fa-envelope"></i><span>Contact Messages</span></a>
+                    </div>
 
-                        <li class="{{ request()->routeIs('admin.lessons.*') ? 'active' : '' }}">
-                            <a href="{{ route('admin.lessons.index') }}">
-                                <i class="fas fa-file-code"></i>
-                                <span>Lessons</span>
-                            </a>
-                        </li>
-
-                        <li class="{{ request()->routeIs('admin.examples.*') ? 'active' : '' }}">
-                            <a href="{{ route('admin.examples.index') }}">
-                                <i class="fas fa-code"></i>
-                                <span>Code Examples</span>
-                            </a>
-                        </li>
-
-                        <li class="{{ request()->routeIs('admin.videos.*') ? 'active' : '' }}">
-                            <a href="{{ route('admin.videos.index') }}">
-                                <i class="fas fa-video"></i>
-                                <span>Videos</span>
-                            </a>
-                        </li>
-
-                        <li class="{{ request()->routeIs('admin.video-playlists.*') ? 'active' : '' }}">
-                            <a href="{{ route('admin.video-playlists.index') }}">
-                                <i class="fas fa-list"></i>
-                                <span>Video Playlists</span>
-                            </a>
-                        </li>
-
-                        <li class="{{ request()->routeIs('admin.quizzes.*') || request()->routeIs('admin.tests.*') ? 'active' : '' }}">
-                            <a href="{{ route('admin.quizzes.index') }}">
-                                <i class="fas fa-tasks"></i>
-                                <span>Quizzes</span>
-                            </a>
-                        </li>
-
-                        <li class="{{ request()->routeIs('admin.programming-languages.*') ? 'active' : '' }}">
-                            <a href="{{ route('admin.programming-languages.index') }}">
-                                <i class="fas fa-code-branch"></i>
-                                <span>Quiz Languages</span>
-                            </a>
-                        </li>
-
-                        <li class="{{ request()->routeIs('admin.quiz-categories.*') ? 'active' : '' }}">
-                            <a href="{{ route('admin.quiz-categories.index') }}">
-                                <i class="fas fa-folder-tree"></i>
-                                <span>Quiz Categories</span>
-                            </a>
-                        </li>
-
-                        <li class="{{ request()->routeIs('admin.quiz-questions.*') ? 'active' : '' }}">
-                            <a href="{{ route('admin.quiz-questions.index') }}">
-                                <i class="fas fa-circle-question"></i>
-                                <span>Quiz Questions</span>
-                            </a>
-                        </li>
-
-                        <li class="{{ request()->routeIs('admin.contacts') ? 'active' : '' }}">
-                            <a href="{{ route('admin.contacts') }}">
-                                <i class="fas fa-envelope"></i>
-                                <span>Contact Messages</span>
-                            </a>
-                        </li>
-                    @endif
-
-                    @if($isSuperAdmin)
-                        <li class="{{ request()->routeIs('admin.activity-logs.*') ? 'active' : '' }}">
-                            <a href="{{ route('admin.activity-logs.index') }}">
-                                <i class="fas fa-clock-rotate-left"></i>
-                                <span>Activity Logs</span>
-                            </a>
-                        </li>
-
-                    @endif
-
-                    @if($canManageContent)
-                        <li class="{{ request()->routeIs('admin.reports.*') ? 'active' : '' }}">
-                            <a href="{{ route('admin.reports.index') }}">
-                                <i class="fas fa-file-export"></i>
-                                <span>Reports & Export</span>
-                            </a>
-                        </li>
-                    @endif
-
-                    @if($isSuperAdmin)
-                        <li class="{{ request()->routeIs('admin.system-settings.*') ? 'active' : '' }}">
-                            <a href="{{ route('admin.system-settings.index') }}">
-                                <i class="fas fa-cogs"></i>
-                                <span>System Settings</span>
-                            </a>
-                        </li>
-                    @endif
-
-                    <li class="{{ request()->routeIs('profile.*') ? 'active' : '' }}">
-                        <a href="{{ route('profile.show') }}">
-                            <i class="fas fa-id-card"></i>
-                            <span>Profile</span>
-                        </a>
-                    </li>
-                </ul>
+                    @php
+                        $securityOpen = request()->routeIs('admin.activity-logs.*') || request()->routeIs('admin.reports.*');
+                    @endphp
+                    <div class="sidebar-section">
+                        <p class="sidebar-section-label">System &amp; Security</p>
+                        <div class="sidebar-group {{ $securityOpen ? 'is-active is-open' : '' }}">
+                            <button class="sidebar-group-toggle" type="button" aria-expanded="{{ $securityOpen ? 'true' : 'false' }}"><i class="fas fa-shield-halved"></i><span>Security &amp; Logs</span><i class="fas fa-chevron-down sidebar-chevron"></i></button>
+                            <div class="sidebar-submenu"><ul>
+                                @if($isSuperAdmin)
+                                    <li><a class="{{ request()->routeIs('admin.activity-logs.*') ? 'active' : '' }}" href="{{ route('admin.activity-logs.index') }}">Activity Logs</a></li>
+                                @endif
+                                <li><a class="{{ request()->routeIs('admin.reports.*') ? 'active' : '' }}" href="{{ route('admin.reports.index') }}">Reports &amp; Export</a></li>
+                            </ul></div>
+                        </div>
+                    </div>
+                @endif
             </nav>
 
             <div class="sidebar-footer">
@@ -206,32 +151,23 @@
                         <span>@yield('breadcrumb', 'Dashboard')</span>
                     </div>
 
-                    <div class="user-menu">
+                    <div class="admin-user-menu">
                         @php
                             $adminUser = auth()->user();
-                            $avatarFallback = 'https://ui-avatars.com/api/?name='.urlencode($adminUser?->name ?? 'Admin').'&background=4F46E5&color=fff';
-                            $adminAvatar = $adminUser?->avatar;
-                            $adminAvatarUrl = $adminAvatar
-                                ? (Str::startsWith($adminAvatar, ['http://', 'https://']) ? $adminAvatar : Storage::url($adminAvatar))
-                                : $avatarFallback;
                         @endphp
-                        <img src="{{ $adminAvatarUrl }}" alt="{{ $adminUser?->name ?? 'Admin' }}" onerror="this.onerror=null;this.src='{{ $avatarFallback }}';">
-
-                        <span>{{ $adminUser?->name ?? 'Admin' }}</span>
-
-                        <form action="{{ route('logout') }}" method="POST" style="margin:0;">
-                            @csrf
-                            <button type="submit" style="
-            background:#dc3545;
-            color:white;
-            border:none;
-            padding:8px 12px;
-            border-radius:6px;
-            cursor:pointer;
-        ">
-                                Logout
-                            </button>
-                        </form>
+                        <button class="admin-user-trigger" id="adminUserMenuTrigger" type="button" aria-expanded="false" aria-controls="adminUserDropdown">
+                            <img src="{{ $adminUser->avatar_url }}" alt="" onerror="this.onerror=null;this.src='{{ $adminUser->default_avatar_url }}';">
+                            <span>{{ $adminUser->name }}</span><i class="fas fa-chevron-down"></i>
+                        </button>
+                        <div class="admin-user-dropdown" id="adminUserDropdown" hidden>
+                            <div class="admin-user-dropdown__identity"><strong>{{ $adminUser->name }}</strong><small>{{ $adminUser->email }}</small></div>
+                            <a href="{{ route('profile.show') }}"><i class="fas fa-id-card"></i>My Profile</a>
+                            @if($isSuperAdmin)
+                                <a href="{{ route('admin.system-settings.index') }}"><i class="fas fa-gear"></i>System Settings</a>
+                            @endif
+                            <a href="{{ route('home') }}"><i class="fas fa-arrow-up-right-from-square"></i>Go to Website</a>
+                            <form action="{{ route('logout') }}" method="POST">@csrf<button type="submit"><i class="fas fa-right-from-bracket"></i>Logout</button></form>
+                        </div>
                     </div>
                 </div>
             </header>
@@ -274,6 +210,38 @@
         document.getElementById('sidebarToggle')?.addEventListener('click', function () {
             document.querySelector('.admin-container').classList.toggle('sidebar-collapsed');
         });
+
+        (() => {
+            const groups = [...document.querySelectorAll('.sidebar-group')];
+            groups.forEach((group) => {
+                const toggle = group.querySelector('.sidebar-group-toggle');
+                toggle.addEventListener('click', () => {
+                    const opening = !group.classList.contains('is-open');
+                    groups.forEach((other) => {
+                        if (other === group) return;
+                        other.classList.remove('is-open');
+                        other.querySelector('.sidebar-group-toggle').setAttribute('aria-expanded', 'false');
+                    });
+                    group.classList.toggle('is-open', opening);
+                    toggle.setAttribute('aria-expanded', opening ? 'true' : 'false');
+                });
+            });
+        })();
+
+        (() => {
+            const menu = document.querySelector('.admin-user-menu');
+            const trigger = document.getElementById('adminUserMenuTrigger');
+            const dropdown = document.getElementById('adminUserDropdown');
+            if (!menu || !trigger || !dropdown) return;
+            const close = () => { dropdown.hidden = true; trigger.setAttribute('aria-expanded', 'false'); };
+            trigger.addEventListener('click', () => {
+                const opening = dropdown.hidden;
+                dropdown.hidden = !opening;
+                trigger.setAttribute('aria-expanded', opening ? 'true' : 'false');
+            });
+            document.addEventListener('click', event => { if (!menu.contains(event.target)) close(); });
+            document.addEventListener('keydown', event => { if (event.key === 'Escape') { close(); trigger.focus(); } });
+        })();
 
         (() => {
             const dialog = document.getElementById('adminDestructiveDialog');
