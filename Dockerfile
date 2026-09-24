@@ -17,8 +17,11 @@ RUN composer install --no-dev --optimize-autoloader --no-interaction
 RUN mkdir -p storage/framework/sessions \
     storage/framework/views \
     storage/framework/cache \
+    storage/app/public/profile-photos \
     bootstrap/cache \
     && chmod -R 775 storage bootstrap/cache
+
+RUN rm -rf public/storage && php artisan storage:link
 
 EXPOSE 10000
 
